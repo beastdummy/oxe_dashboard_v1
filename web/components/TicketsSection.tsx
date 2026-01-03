@@ -25,7 +25,14 @@ export function TicketsSection() {
     }
 
     window.addEventListener("oxe_dashboard:ticketsUpdate", handleTicketsData as EventListener)
-    invokeNative("triggerServerEvent", "tickets:getAll")
+    
+    // Solicitar tickets del servidor (solo en FiveM)
+    if (typeof window !== "undefined" && (window as any).invokeNative) {
+      ;(window as any).invokeNative("triggerServerEvent", "tickets:getAll")
+    } else {
+      console.log("[TicketsSection] invokeNative no disponible")
+      setLoading(false)
+    }
 
     return () => {
       window.removeEventListener("oxe_dashboard:ticketsUpdate", handleTicketsData as EventListener)

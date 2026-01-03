@@ -43,14 +43,16 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
     if (inputMessage.trim() || pendingImage) {
       // Enviar mensaje al backend
       const messageType = pendingImage ? "image" : "text"
-      invokeNative(
-        "triggerServerEvent",
-        "ticket:addMessage",
-        ticket.id,
-        inputMessage,
-        messageType,
-        pendingImage || null
-      )
+      if (typeof window !== "undefined" && (window as any).invokeNative) {
+        ;(window as any).invokeNative(
+          "triggerServerEvent",
+          "ticket:addMessage",
+          ticket.id,
+          inputMessage,
+          messageType,
+          pendingImage || null
+        )
+      }
 
       // Mostrar inmediatamente en UI (optimistic update)
       const newMessage: TicketMessage = {
@@ -77,13 +79,15 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
 
   const executeInvite = () => {
     // Enviar invitación al backend
-    invokeNative(
-      "triggerServerEvent",
-      "ticket:invitePlayer",
-      ticket.id,
-      parseInt(inviteConfirm.playerId),
-      inviteConfirm.playerName
-    )
+    if (typeof window !== "undefined" && (window as any).invokeNative) {
+      ;(window as any).invokeNative(
+        "triggerServerEvent",
+        "ticket:invitePlayer",
+        ticket.id,
+        parseInt(inviteConfirm.playerId),
+        inviteConfirm.playerName
+      )
+    }
 
     // Mostrar inmediatamente en UI
     const newMessage: TicketMessage = {
@@ -155,7 +159,9 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
 
   const executeStatusChange = (newStatus: string) => {
     // Enviar cambio de estado al backend
-    invokeNative("triggerServerEvent", "ticket:updateStatus", ticket.id, newStatus)
+    if (typeof window !== "undefined" && (window as any).invokeNative) {
+      ;(window as any).invokeNative("triggerServerEvent", "ticket:updateStatus", ticket.id, newStatus)
+    }
     setConfirmDialog({ isOpen: false, newStatus: null })
   }
 
