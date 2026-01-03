@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Filter, MapPin, MoreHorizontal, Search, Trophy } from "lucide-react"
 import { useModals } from "@/context/ModalsContext"
+import { useActivity } from "@/context/ActivityContext"
 import { InventorySlot } from "@/lib/types/inventory"
+import type { FilterOptions } from "@/components/FilterModal"
 
 // Extend window interface for FiveM invokeNative
 declare global {
@@ -18,6 +20,14 @@ declare global {
 type PlayerPresence = "online" | "offline"
 type PlayerAccountStatus = "active" | "banned" | "suspended"
 
+type CurrencyType = {
+  name: string
+  key: string
+  color: string
+  amount: number
+  icon: string
+}
+
 type Player = {
   id: string
   name: string
@@ -25,6 +35,7 @@ type Player = {
   level: number
   experience: number
   money: number
+  currency: CurrencyType[]
   kills: number
   deaths: number
   missions: number
@@ -48,8 +59,17 @@ const accountStatusColor: Record<PlayerAccountStatus, { dot: string; text: strin
 }
 
 export default function PlayersPage() {
+  const { openBroadcastModal, openFilterModal, openSuspendModal, openBanModal, openMessageModal } = useModals()
+  const { addActivity } = useActivity()
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null)
+  const [filters, setFilters] = useState<FilterOptions>({
+    presence: "all",
+    accountStatus: "all",
+    minLevel: 1,
+    maxLevel: 99,
+    sortBy: "name",
+  })
   const { openInventoryModal, openActionsModal } = useModals()
 
   const players: Player[] = useMemo(
@@ -61,6 +81,12 @@ export default function PlayersPage() {
         level: 45,
         experience: 8750,
         money: 125000,
+        currency: [
+          { name: "Efectivo", key: "cash", color: "text-green-400", amount: 50000, icon: "💵" },
+          { name: "Banco", key: "bank", color: "text-blue-400", amount: 75000, icon: "🏦" },
+          { name: "Cripto", key: "crypto", color: "text-yellow-400", amount: 12500, icon: "₿" },
+          { name: "Disponible", key: "available", color: "text-gray-400", amount: 0, icon: "➕" },
+        ],
         kills: 156,
         deaths: 23,
         missions: 47,
@@ -77,6 +103,11 @@ export default function PlayersPage() {
         level: 38,
         experience: 6200,
         money: 87000,
+        currency: [
+          { name: "Efectivo", key: "cash", color: "text-green-400", amount: 35000, icon: "💵" },
+          { name: "Banco", key: "bank", color: "text-blue-400", amount: 52000, icon: "🏦" },
+          { name: "Disponible", key: "available", color: "text-gray-400", amount: 0, icon: "➕" },
+        ],
         kills: 98,
         deaths: 45,
         missions: 32,
@@ -93,6 +124,13 @@ export default function PlayersPage() {
         level: 52,
         experience: 12500,
         money: 250000,
+        currency: [
+          { name: "Efectivo", key: "cash", color: "text-green-400", amount: 100000, icon: "💵" },
+          { name: "Banco", key: "bank", color: "text-blue-400", amount: 150000, icon: "🏦" },
+          { name: "Cripto", key: "crypto", color: "text-yellow-400", amount: 45000, icon: "₿" },
+          { name: "Oro", key: "gold", color: "text-yellow-600", amount: 25000, icon: "🏆" },
+          { name: "Disponible", key: "available", color: "text-gray-400", amount: 0, icon: "➕" },
+        ],
         kills: 234,
         deaths: 18,
         missions: 63,
@@ -109,6 +147,11 @@ export default function PlayersPage() {
         level: 28,
         experience: 3450,
         money: 45000,
+        currency: [
+          { name: "Efectivo", key: "cash", color: "text-green-400", amount: 20000, icon: "💵" },
+          { name: "Banco", key: "bank", color: "text-blue-400", amount: 25000, icon: "🏦" },
+          { name: "Disponible", key: "available", color: "text-gray-400", amount: 0, icon: "➕" },
+        ],
         kills: 45,
         deaths: 67,
         missions: 18,
@@ -125,6 +168,11 @@ export default function PlayersPage() {
         level: 42,
         experience: 7800,
         money: 156000,
+        currency: [
+          { name: "Efectivo", key: "cash", color: "text-green-400", amount: 60000, icon: "💵" },
+          { name: "Banco", key: "bank", color: "text-blue-400", amount: 96000, icon: "🏦" },
+          { name: "Disponible", key: "available", color: "text-gray-400", amount: 0, icon: "➕" },
+        ],
         kills: 129,
         deaths: 31,
         missions: 41,
@@ -141,6 +189,11 @@ export default function PlayersPage() {
         level: 15,
         experience: 1200,
         money: 12000,
+        currency: [
+          { name: "Efectivo", key: "cash", color: "text-green-400", amount: 8000, icon: "💵" },
+          { name: "Banco", key: "bank", color: "text-blue-400", amount: 4000, icon: "🏦" },
+          { name: "Disponible", key: "available", color: "text-gray-400", amount: 0, icon: "➕" },
+        ],
         kills: 12,
         deaths: 34,
         missions: 5,
@@ -217,12 +270,48 @@ export default function PlayersPage() {
   }
 
   const filteredPlayers = useMemo(() => {
+    let result = players
+
+    // Filtro por búsqueda
     const q = searchTerm.trim().toLowerCase()
-    if (!q) return players
-    return players.filter(
-      (p) => p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || p.band.toLowerCase().includes(q),
-    )
-  }, [players, searchTerm])
+    if (q) {
+      result = result.filter(
+        (p) => p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || p.band.toLowerCase().includes(q),
+      )
+    }
+
+    // Filtro por presencia
+    if (filters.presence !== "all") {
+      result = result.filter((p) => p.presence === filters.presence)
+    }
+
+    // Filtro por estado de cuenta
+    if (filters.accountStatus !== "all") {
+      result = result.filter((p) => p.accountStatus === filters.accountStatus)
+    }
+
+    // Filtro por nivel
+    result = result.filter((p) => p.level >= filters.minLevel && p.level <= filters.maxLevel)
+
+    // Ordenar
+    result.sort((a, b) => {
+      switch (filters.sortBy) {
+        case "level":
+          return b.level - a.level
+        case "money":
+          return b.money - a.money
+        case "kills":
+          return b.kills - a.kills
+        case "reputation":
+          return b.reputation - a.reputation
+        case "name":
+        default:
+          return a.name.localeCompare(b.name)
+      }
+    })
+
+    return result
+  }, [players, searchTerm, filters])
 
   const onlineCount = players.filter((p) => p.presence === "online").length
   const offlineCount = players.length - onlineCount
@@ -236,8 +325,25 @@ export default function PlayersPage() {
           <p className="text-sm text-neutral-400">Gestiona y monitorea jugadores del servidor</p>
         </div>
         <div className="flex gap-2">
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">Broadcast</Button>
-          <Button className="bg-orange-500 hover:bg-orange-600 text-white">
+          <Button 
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={openBroadcastModal}
+          >
+            Broadcast
+          </Button>
+          <Button 
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={() => {
+              setFilters({
+                presence: "all",
+                accountStatus: "all",
+                minLevel: 1,
+                maxLevel: 99,
+                sortBy: "name",
+              })
+              openFilterModal()
+            }}
+          >
             <Filter className="w-4 h-4 mr-2" />
             Filtrar
           </Button>
@@ -413,7 +519,7 @@ export default function PlayersPage() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="bg-neutral-800 p-4 rounded">
                   <p className="text-xs text-neutral-400 mb-2">NIVEL</p>
                   <p className="text-2xl font-bold text-white">{selectedPlayer.level}</p>
@@ -423,12 +529,24 @@ export default function PlayersPage() {
                   <p className="text-2xl font-bold text-white">{selectedPlayer.experience}</p>
                 </div>
                 <div className="bg-neutral-800 p-4 rounded">
-                  <p className="text-xs text-neutral-400 mb-2">DINERO</p>
-                  <p className="text-2xl font-bold text-green-400">${selectedPlayer.money.toLocaleString()}</p>
-                </div>
-                <div className="bg-neutral-800 p-4 rounded">
                   <p className="text-xs text-neutral-400 mb-2">REPUTACIÓN</p>
                   <p className="text-2xl font-bold text-orange-500">{selectedPlayer.reputation}</p>
+                </div>
+              </div>
+
+              {/* Sección de Monedas/Divisas */}
+              <div>
+                <p className="text-xs text-neutral-400 mb-3 font-semibold tracking-wider">DIVISAS</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {selectedPlayer.currency.map((curr) => (
+                    <div key={curr.key} className="bg-neutral-800 p-4 rounded border border-neutral-700 hover:border-neutral-600 transition">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-sm text-neutral-400">{curr.name}</p>
+                        <span className="text-xl">{curr.icon}</span>
+                      </div>
+                      <p className={`text-xl font-bold ${curr.color}`}>${curr.amount.toLocaleString()}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
 
@@ -485,21 +603,106 @@ export default function PlayersPage() {
               </div>
 
               <div className="flex gap-2 pt-4 border-t border-neutral-700 flex-wrap">
-                <Button className="bg-orange-500 hover:bg-orange-600 text-white">Enviar Mensaje</Button>
                 <Button 
-                  onClick={() => handleViewInventory(selectedPlayer.id, selectedPlayer.name)}
+                  onClick={() => {
+                    openMessageModal(selectedPlayer.id, selectedPlayer.name)
+                    addActivity({
+                      type: "message",
+                      playerId: selectedPlayer.id,
+                      playerName: selectedPlayer.name,
+                      action: "Mensaje abierto",
+                      icon: "message",
+                      color: "#f97316",
+                    })
+                  }}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  Enviar Mensaje
+                </Button>
+                <Button 
+                  onClick={() => {
+                    if (window.invokeNative) {
+                      window.invokeNative('triggerServerEvent', 'spectate:player', selectedPlayer.id)
+                    } else {
+                      alert(`Spectate: ${selectedPlayer.name}`)
+                    }
+                    addActivity({
+                      type: "spectate",
+                      playerId: selectedPlayer.id,
+                      playerName: selectedPlayer.name,
+                      action: "Espectate iniciado",
+                      icon: "spectate",
+                      color: "#a855f7",
+                    })
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  👁️ Spectate
+                </Button>
+                <Button 
+                  onClick={() => {
+                    handleViewInventory(selectedPlayer.id, selectedPlayer.name)
+                    addActivity({
+                      type: "inventory",
+                      playerId: selectedPlayer.id,
+                      playerName: selectedPlayer.name,
+                      action: "Inventario visualizado",
+                      icon: "inventory",
+                      color: "#22c55e",
+                    })
+                  }}
                   className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   Ver Inventario
                 </Button>
                 <Button
-                  onClick={() => openActionsModal(selectedPlayer.id, selectedPlayer.name)}
+                  onClick={() => {
+                    openActionsModal(selectedPlayer.id, selectedPlayer.name)
+                    addActivity({
+                      type: "spectate",
+                      playerId: selectedPlayer.id,
+                      playerName: selectedPlayer.name,
+                      action: "Acciones modal abierto",
+                      icon: "spectate",
+                      color: "#3b82f6",
+                    })
+                  }}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   ⚡ Acciones
                 </Button>
-                <Button className="bg-red-600 hover:bg-red-700 text-white">Banear</Button>
-                <Button className="bg-yellow-600 hover:bg-yellow-700 text-white">Suspender</Button>
+                <Button 
+                  onClick={() => {
+                    openSuspendModal(selectedPlayer.id, selectedPlayer.name)
+                    addActivity({
+                      type: "suspend",
+                      playerId: selectedPlayer.id,
+                      playerName: selectedPlayer.name,
+                      action: "Suspensión modal abierto",
+                      icon: "suspend",
+                      color: "#eab308",
+                    })
+                  }}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                >
+                  Suspender
+                </Button>
+                <Button 
+                  onClick={() => {
+                    openBanModal(selectedPlayer.id, selectedPlayer.name)
+                    addActivity({
+                      type: "ban",
+                      playerId: selectedPlayer.id,
+                      playerName: selectedPlayer.name,
+                      action: "Ban modal abierto",
+                      icon: "ban",
+                      color: "#ef4444",
+                    })
+                  }}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Banear
+                </Button>
               </div>
             </CardContent>
           </Card>

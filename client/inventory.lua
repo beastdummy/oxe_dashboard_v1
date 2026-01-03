@@ -145,6 +145,18 @@ RegisterNetEvent('inventory:clearInventory:response', function(success, message)
     end
 end)
 
+-- =====================================================
+-- RECEIVE PLAYER INVENTORY (Admin panel)
+-- =====================================================
+RegisterNetEvent('inventory:playerData')
+AddEventHandler('inventory:playerData', function(targetPlayerId, inventoryData)
+    -- Este event es recibido y procesado por el frontend
+    -- Los datos se envían al dashboard mediante callback
+    TriggerEvent('oxe_dashboard:inventoryUpdate', targetPlayerId, inventoryData)
+    
+    print('^3[Inventory] Received inventory data for player ' .. targetPlayerId .. ' with ' .. #inventoryData .. ' items^7')
+end)
+
 -- Export functions for use throughout the resource
 exports('giveItem', GiveItemToPlayer)
 exports('dropItem', DropItem)

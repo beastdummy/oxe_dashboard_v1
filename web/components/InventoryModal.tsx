@@ -43,6 +43,17 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
   const [deleteItemName, setDeleteItemName] = useState("")
   const containerRef = useRef<HTMLDivElement>(null)
 
+  // Request inventory data from server on mount
+  useEffect(() => {
+    if (window.invokeNative) {
+      try {
+        window.invokeNative('triggerServerEvent', 'inventory:getPlayerInventory', playerId)
+      } catch (err) {
+        console.error('Error requesting inventory:', err)
+      }
+    }
+  }, [playerId])
+
   const handleHeaderMouseDown = (e: React.MouseEvent) => {
     if ((e.target as HTMLElement).closest("button")) return
     setIsDragging(true)

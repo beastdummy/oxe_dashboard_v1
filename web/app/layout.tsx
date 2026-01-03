@@ -4,6 +4,7 @@ import { Geist_Mono as GeistMono } from "next/font/google"
 import "./globals.css"
 import { LanguageProvider } from "@/context/LanguageContext"
 import { ModalsProvider } from "@/context/ModalsContext"
+import { ActivityProvider } from "@/context/ActivityContext"
 import { GlobalModals } from "@/components/GlobalModals"
 import { DashboardLayout } from "@/components/DashboardLayout"
 
@@ -23,14 +24,16 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${geistMono.className} bg-black text-white antialiased`}>
-        <ModalsProvider>
-          <DashboardLayout>
-            <LanguageProvider>
-              {children}
-            </LanguageProvider>
-          </DashboardLayout>
-          <GlobalModals />
-        </ModalsProvider>
+        <ActivityProvider>
+          <ModalsProvider>
+            <DashboardLayout>
+              <LanguageProvider>
+                {children}
+              </LanguageProvider>
+            </DashboardLayout>
+            <GlobalModals />
+          </ModalsProvider>
+        </ActivityProvider>
       </body>
     </html>
   )

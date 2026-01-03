@@ -26,6 +26,39 @@ Config = {
     logs = true,
   },
   
+  -- =============================================
+  -- LOGGING CONFIGURATION
+  -- =============================================
+  logging = {
+    -- SQL Database Logging
+    sql = {
+      enabled = true,
+      resource = 'oxmysql', -- 'oxmysql' or 'mysql-async'
+    },
+    
+    -- Discord Webhook Logging
+    discord = {
+      enabled = true,
+      webhookUrl = 'https://discordapp.com/api/webhooks/YOUR_WEBHOOK_ID_HERE', -- Change this!
+      botName = '🤖 OXE Admin Logger',
+      iconUrl = 'https://cdn.discordapp.com/emojis/889703127195455488.png',
+    },
+    
+    -- FiveManager Integration
+    fiveManager = {
+      enabled = false,
+      apiKey = 'YOUR_FIVEMANAGER_API_KEY_HERE',
+      serverId = 1,
+      endpoint = 'https://fivemanager.your-domain.com/api',
+    },
+    
+    -- Local File Logging (JSON)
+    file = {
+      enabled = true,
+      path = 'logs/admin_logs.json',
+    },
+  },
+  
   -- Configuración de permisos
   permissions = {
     admin_level = 2, -- Nivel mínimo de admin para acceder

@@ -76,9 +76,9 @@ export function AdminChat() {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-screen">
       {/* Messages Container */}
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4 max-h-64 pr-2">
+      <div className="flex-1 overflow-y-auto space-y-3 pr-2 pb-4">
         {messages.map((msg) => (
           <div key={msg.id} className="text-xs">
             <div className="flex items-baseline gap-2">
@@ -92,7 +92,7 @@ export function AdminChat() {
       </div>
 
       {/* Input Area */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 pb-2">
         <Input
           type="text"
           placeholder="Mensaje..."

@@ -10,7 +10,6 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  swcMinify: true,
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,

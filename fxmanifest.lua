@@ -21,15 +21,19 @@ shared_scripts {
 }
 
 client_scripts {
+  'client/notifications.lua',
   'client/main.lua',
   'client/inventory.lua',
   'client/actions.lua',
+  'client/tickets.lua',
 }
 
 server_scripts {
+  'server/logs.lua',
   'server/main.lua',
   'server/inventory.lua',
   'server/actions.lua',
+  'server/tickets.lua',
 }
 
 dependencies {

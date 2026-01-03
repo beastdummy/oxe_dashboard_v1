@@ -8,6 +8,7 @@ import AgentNetworkPage from "./agent-network/page"
 import OperationsPage from "./operations/page"
 import IntelligencePage from "./intelligence/page"
 import SystemsPage from "./systems/page"
+import ActivityPage from "./activity/page"
 import { useTranslation } from "@/lib/useTranslation"
 import { useLanguage } from "@/context/LanguageContext"
 import { useModals } from "@/context/ModalsContext"
@@ -50,6 +51,7 @@ export default function TacticalDashboard() {
               { id: "operations", icon: Target, label: t.sidebar.operations },
               { id: "intelligence", icon: Shield, label: t.sidebar.intelligence },
               { id: "systems", icon: Settings, label: t.sidebar.systems },
+              { id: "activity", icon: Bell, label: "Actividad" },
             ].map((item) => (
               <button
                 key={item.id}
@@ -143,6 +145,7 @@ export default function TacticalDashboard() {
           {activeSection === "operations" && <OperationsPage />}
           {activeSection === "intelligence" && <IntelligencePage />}
           {activeSection === "systems" && <SystemsPage />}
+          {activeSection === "activity" && <ActivityPage />}
         </div>
       </div>
     </div>

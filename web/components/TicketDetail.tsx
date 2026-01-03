@@ -4,6 +4,9 @@ import { useState, useRef, useEffect } from "react"
 import { X, Image, Users, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { ImageModal } from "@/components/ImageModal"
+import { InvitePlayerModal } from "@/components/InvitePlayerModal"
+import { ConfirmDialog } from "@/components/ConfirmDialog"
 import { Ticket, TicketMessage, priorityConfig, statusConfig } from "@/lib/types/tickets"
 
 interface TicketDetailProps {
@@ -14,6 +17,9 @@ interface TicketDetailProps {
 export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
   const [messages, setMessages] = useState<TicketMessage[]>(ticket.messages)
   const [inputMessage, setInputMessage] = useState("")
+  const [imageModalOpen, setImageModalOpen] = useState(false)
+  const [inviteModalOpen, setInviteModalOpen] = useState(false)
+  const [pendingImage, setPendingImage] = useState<string | null>(null)
   const [position, setPosition] = useState(() => ({
     x: typeof window !== "undefined" ? window.innerWidth / 2 - 400 : 100,
     y: 50,
@@ -22,20 +28,73 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean
+    newStatus: string | null
+  }>({ isOpen: false, newStatus: null })
+  const [inviteConfirm, setInviteConfirm] = useState<{
+    isOpen: boolean
+    playerId: string
+    playerName: string
+  }>({ isOpen: false, playerId: "", playerName: "" })
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleSendMessage = () => {
-    if (inputMessage.trim()) {
+    if (inputMessage.trim() || pendingImage) {
+      // Enviar mensaje al backend
+      const messageType = pendingImage ? "image" : "text"
+      invokeNative(
+        "triggerServerEvent",
+        "ticket:addMessage",
+        ticket.id,
+        inputMessage,
+        messageType,
+        pendingImage || null
+      )
+
+      // Mostrar inmediatamente en UI (optimistic update)
       const newMessage: TicketMessage = {
         id: Date.now().toString(),
         author: "ADMIN_ROOT",
         role: "admin",
         message: inputMessage,
         timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+        image: pendingImage || undefined,
       }
       setMessages([...messages, newMessage])
       setInputMessage("")
+      setPendingImage(null)
     }
+  }
+
+  const handleImageAdd = (imageUrl: string) => {
+    setPendingImage(imageUrl)
+  }
+
+  const handleInvitePlayer = (playerId: string, playerName: string) => {
+    setInviteConfirm({ isOpen: true, playerId, playerName })
+  }
+
+  const executeInvite = () => {
+    // Enviar invitación al backend
+    invokeNative(
+      "triggerServerEvent",
+      "ticket:invitePlayer",
+      ticket.id,
+      parseInt(inviteConfirm.playerId),
+      inviteConfirm.playerName
+    )
+
+    // Mostrar inmediatamente en UI
+    const newMessage: TicketMessage = {
+      id: Date.now().toString(),
+      author: "ADMIN_ROOT",
+      role: "admin",
+      message: `📍 Invitó a @${inviteConfirm.playerName} (ID: ${inviteConfirm.playerId}) al ticket`,
+      timestamp: new Date().toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }),
+    }
+    setMessages([...messages, newMessage])
+    setInviteConfirm({ isOpen: false, playerId: "", playerName: "" })
   }
 
   // Drag functionality
@@ -85,8 +144,25 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
     setIsResizing(true)
   }
 
+  const handleStatusChange = (newStatus: string) => {
+    // Mostrar confirmación para cambios críticos
+    if (newStatus === "closed" || newStatus === "resolved") {
+      setConfirmDialog({ isOpen: true, newStatus })
+    } else {
+      executeStatusChange(newStatus)
+    }
+  }
+
+  const executeStatusChange = (newStatus: string) => {
+    // Enviar cambio de estado al backend
+    invokeNative("triggerServerEvent", "ticket:updateStatus", ticket.id, newStatus)
+    setConfirmDialog({ isOpen: false, newStatus: null })
+  }
+
   const priorityStyle = priorityConfig[ticket.priority]
   const statusStyle = statusConfig[ticket.status]
+
+  const statusOptions = ["open", "in_progress", "resolved", "closed"]
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 pointer-events-none">
@@ -113,10 +189,22 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
                 {priorityStyle.label}
               </span>
               <span 
-                className="text-xs px-2 py-1 rounded border"
+                className="text-xs px-2 py-1 rounded border cursor-pointer pointer-events-auto group relative"
                 style={{ color: statusStyle.style.color, borderColor: statusStyle.style.borderColor }}
               >
                 {statusStyle.label}
+                {/* Status dropdown menu */}
+                <div className="hidden group-hover:block absolute top-full mt-1 bg-neutral-800 border border-neutral-700 rounded shadow-lg z-10">
+                  {statusOptions.map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => handleStatusChange(status)}
+                      className="block w-full text-left px-3 py-2 text-xs text-neutral-300 hover:bg-orange-500/30 hover:text-orange-400 transition-colors"
+                    >
+                      {statusConfig[status as keyof typeof statusConfig]?.label}
+                    </button>
+                  ))}
+                </div>
               </span>
             </div>
             <div className="text-xs text-neutral-400 space-y-1">
@@ -170,14 +258,20 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
         <div className="border-t border-neutral-700 p-4 bg-neutral-800/30">
           <div className="flex gap-2 mb-2">
             <Button
+              onClick={() => setImageModalOpen(true)}
               size="sm"
               variant="outline"
-              className="text-xs text-neutral-400 border-neutral-600 pointer-events-auto"
+              className={`text-xs border-neutral-600 pointer-events-auto ${
+                pendingImage
+                  ? "border-orange-500 text-orange-400"
+                  : "text-neutral-400 hover:text-white"
+              }`}
             >
               <Image className="w-3 h-3 mr-1" />
-              Imagen
+              Imagen {pendingImage && "✓"}
             </Button>
             <Button
+              onClick={() => setInviteModalOpen(true)}
               size="sm"
               variant="outline"
               className="text-xs text-neutral-400 border-neutral-600 pointer-events-auto"
@@ -214,6 +308,48 @@ export function TicketDetail({ ticket, onClose }: TicketDetailProps) {
           onMouseDown={handleResizeStart}
           className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize bg-gradient-to-tl from-orange-500/30 to-transparent hover:from-orange-500/50"
           title="Arrastrar para redimensionar"
+        />
+
+        {/* Image Modal */}
+        <ImageModal
+          isOpen={imageModalOpen}
+          onClose={() => setImageModalOpen(false)}
+          onImageAdd={handleImageAdd}
+        />
+
+        {/* Invite Player Modal */}
+        <InvitePlayerModal
+          isOpen={inviteModalOpen}
+          onClose={() => setInviteModalOpen(false)}
+          onInvite={handleInvitePlayer}
+          currentTicketId={ticket.id}
+        />
+
+        {/* Status Change Confirmation */}
+        <ConfirmDialog
+          isOpen={confirmDialog.isOpen}
+          title={`Cambiar estado a "${statusConfig[confirmDialog.newStatus as keyof typeof statusConfig]?.label}"`}
+          description={`¿Estás seguro de cambiar el estado de este ticket a "${statusConfig[confirmDialog.newStatus as keyof typeof statusConfig]?.label}"? Esta acción se registrará en el log de actividad.`}
+          isDangerous={confirmDialog.newStatus === "closed"}
+          confirmText="Confirmar"
+          cancelText="Cancelar"
+          onConfirm={() => {
+            if (confirmDialog.newStatus) {
+              executeStatusChange(confirmDialog.newStatus)
+            }
+          }}
+          onCancel={() => setConfirmDialog({ isOpen: false, newStatus: null })}
+        />
+        {/* Invite Player Confirmation */}
+        <ConfirmDialog
+          isOpen={inviteConfirm.isOpen}
+          title="Invitar jugador al ticket"
+          description={`¿Estás seguro de invitar a ${inviteConfirm.playerName} (ID: ${inviteConfirm.playerId}) a este ticket?`}
+          isDangerous={false}
+          confirmText="Invitar"
+          cancelText="Cancelar"
+          onConfirm={executeInvite}
+          onCancel={() => setInviteConfirm({ isOpen: false, playerId: "", playerName: "" })}
         />
       </div>
     </div>

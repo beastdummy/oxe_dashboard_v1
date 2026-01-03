@@ -149,13 +149,13 @@ export default function CommandCenterPage() {
         </Card>
 
         {/* Encrypted Chat Activity */}
-        <Card className="lg:col-span-4 bg-neutral-900 border-neutral-700">
+        <Card className="lg:col-span-4 bg-neutral-900 border-neutral-700 flex flex-col h-96">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">
               ADMIN CHAT
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex-1 flex flex-col overflow-hidden">
             <AdminChat />
           </CardContent>
         </Card>

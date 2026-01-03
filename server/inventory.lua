@@ -229,4 +229,73 @@ AddEventHandler('inventory:moveItem', function(targetPlayerId, fromSlot, toSlot)
     end
 end)
 
+-- =====================================================
+-- GET PLAYER INVENTORY (Admin function)
+-- =====================================================
+RegisterServerEvent('inventory:getPlayerInventory')
+AddEventHandler('inventory:getPlayerInventory', function(targetPlayerId)
+    local adminId = source
+    local adminName = GetPlayerName(adminId)
+    
+    if not IsAdmin(adminId) then
+        lib.notify(adminId, { description = 'No tienes permiso', type = 'error' })
+        return
+    end
+    
+    if not OxInventoryAvailable then
+        -- Fallback: Return empty inventory
+        TriggerClientEvent('inventory:playerData', adminId, targetPlayerId, {})
+        return
+    end
+    
+    -- Get target player's inventory
+    local targetInventory = exports.ox_inventory:GetInventoryItems(targetPlayerId)
+    
+    if not targetInventory then
+        lib.notify(adminId, { description = 'No se pudo obtener el inventario', type = 'error' })
+        return
+    end
+    
+    -- Format inventory data for frontend
+    local formattedInventory = {}
+    for slot, item in pairs(targetInventory) do
+        table.insert(formattedInventory, {
+            slot = slot,
+            name = item.name,
+            label = item.label or item.name,
+            count = item.count,
+            weight = item.weight,
+            metadata = item.metadata,
+            canRemove = item.canRemove ~= false,
+        })
+    end
+    
+    -- Send to admin client
+    TriggerClientEvent('inventory:playerData', adminId, targetPlayerId, formattedInventory)
+    
+    -- Log access
+    exports['oxe_dashboard_v1']:LogAdminAction(adminId, adminName, 'inventory_view', targetPlayerId, GetPlayerName(targetPlayerId), {
+        itemCount = #formattedInventory,
+        totalWeight = 0, -- Could calculate if needed
+    })
+    
+    lib.notify(adminId, { 
+        description = 'Inventario de ' .. GetPlayerName(targetPlayerId) .. ' (' .. #formattedInventory .. ' items)', 
+        type = 'success' 
+    })
+    
+    print('^3[Inventory] Admin ' .. adminName .. ' (' .. adminId .. ') viewed inventory of player ' .. targetPlayerId .. '^7')
+end)
+
+-- Helper function to check admin
+function IsAdmin(playerId)
+    if Framework and Framework.GetPlayer then
+        local player = Framework.GetPlayer(playerId)
+        if player and (player.hasPermission('admin') or player.hasPermission('mod')) then
+            return true
+        end
+    end
+    return true -- Fallback
+end
+
 print('^3[Inventory] System loaded | ox_inventory: ' .. (OxInventoryAvailable and '^2Enabled' or '^1Disabled (Dev Mode)') .. '^7')
