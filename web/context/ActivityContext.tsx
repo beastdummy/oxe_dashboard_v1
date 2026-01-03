@@ -2,17 +2,17 @@
 
 import { createContext, useContext, useState, ReactNode } from "react"
 
-export type ActivityType = "message" | "suspend" | "ban" | "spectate" | "broadcast" | "heal" | "kill" | "freeze" | "inventory"
+export type ActivityType = "message" | "suspend" | "ban" | "spectate" | "broadcast" | "action" | "heal" | "kill" | "freeze" | "inventory"
 
 export interface Activity {
   id: string
   type: ActivityType
-  playerId: string
-  playerName: string
   action: string
   timestamp: Date
   icon: string
   color: string
+  playerId?: string
+  playerName?: string
 }
 
 interface ActivityContextType {
