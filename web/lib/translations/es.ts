@@ -6,7 +6,7 @@ export const es = {
   sidebar: {
     centerCommand: "CENTRO DE MANDO",
     players: "JUGADORES",
-    operations: "OPERACIONES",
+    operations: "TRABAJOS/BANDAS",
     intelligence: "INTELIGENCIA",
     systems: "SISTEMAS",
   },
