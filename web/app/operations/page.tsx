@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Target, MapPin, Clock, Users, AlertTriangle, CheckCircle, XCircle } from "lucide-react"
+import { JobsGangsSection } from "@/components/JobsGangsSection"
 
 export default function OperationsPage() {
   const [selectedOperation, setSelectedOperation] = useState(null)
@@ -354,6 +355,16 @@ export default function OperationsPage() {
           </Card>
         </div>
       )}
+
+      {/* JOBS & GANGS SECTION */}
+      <div className="mt-8">
+        <div className="mb-4">
+          <h2 className="text-lg font-semibold text-white tracking-wider">JOBS / GANGS</h2>
+          <p className="text-xs text-neutral-500">Manage jobs, gangs, and organizations</p>
+        </div>
+        <JobsGangsSection />
+      </div>
     </div>
   )
 }
+

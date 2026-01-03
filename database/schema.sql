@@ -396,3 +396,109 @@ CREATE TABLE IF NOT EXISTS `ticket_participants` (
 -- DESCRIBE player_bans;
 -- DESCRIBE player_suspensions;
 -- etc.
+-- =====================================================
+-- GANGS TABLE
+-- =====================================================
+-- Stores gang/faction information
+
+CREATE TABLE IF NOT EXISTS `gangs` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Gang name (e.g., Vagos, Ballas)',
+    `label` VARCHAR(100) NOT NULL COMMENT 'Display name',
+    `leader_id` VARCHAR(50) COMMENT 'Gang leader player ID',
+    `leader_name` VARCHAR(50) COMMENT 'Gang leader name',
+    `description` TEXT,
+    `color` VARCHAR(7) DEFAULT '#FF0000' COMMENT 'Gang color in hex',
+    `territory` VARCHAR(100) COMMENT 'Gang territory location',
+    `members_count` INT DEFAULT 0,
+    `reputation` INT DEFAULT 0 COMMENT 'Gang reputation points',
+    `treasury` BIGINT DEFAULT 0 COMMENT 'Gang bank balance',
+    `level` INT DEFAULT 1,
+    `status` ENUM('active', 'defeated') DEFAULT 'active',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Indexes
+    KEY `idx_name` (`name`),
+    KEY `idx_leader_id` (`leader_id`),
+    KEY `idx_status` (`status`),
+    KEY `idx_reputation` (`reputation`),
+    KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- JOBS TABLE
+-- =====================================================
+-- Stores job/organization information
+
+CREATE TABLE IF NOT EXISTS `jobs` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `name` VARCHAR(50) NOT NULL UNIQUE COMMENT 'Job name (e.g., Lost MC, Families)',
+    `label` VARCHAR(100) NOT NULL COMMENT 'Display name',
+    `boss_id` VARCHAR(50) COMMENT 'Job boss/manager player ID',
+    `boss_name` VARCHAR(50) COMMENT 'Job boss name',
+    `description` TEXT,
+    `color` VARCHAR(7) DEFAULT '#FFA500' COMMENT 'Job color in hex',
+    `territory` VARCHAR(100) COMMENT 'Job territory/location',
+    `members_count` INT DEFAULT 0,
+    `level` INT DEFAULT 1 COMMENT 'Job level/progression',
+    `treasury` BIGINT DEFAULT 0 COMMENT 'Job bank balance',
+    `payment_rate` INT DEFAULT 500 COMMENT 'Payment per job mission',
+    `status` ENUM('active', 'inactive') DEFAULT 'active',
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Indexes
+    KEY `idx_name` (`name`),
+    KEY `idx_boss_id` (`boss_id`),
+    KEY `idx_status` (`status`),
+    KEY `idx_level` (`level`),
+    KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- GANG MEMBERS TABLE
+-- =====================================================
+-- Tracks gang membership
+
+CREATE TABLE IF NOT EXISTS `gang_members` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `gang_id` INT NOT NULL,
+    `player_id` VARCHAR(50) NOT NULL,
+    `player_name` VARCHAR(50) NOT NULL,
+    `rank` INT DEFAULT 0 COMMENT 'Rank within gang (0=member, higher=boss)',
+    `joined_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Indexes
+    KEY `idx_gang_id` (`gang_id`),
+    KEY `idx_player_id` (`player_id`),
+    KEY `idx_rank` (`rank`),
+    
+    -- Foreign key
+    CONSTRAINT `fk_gang_members_gangs` FOREIGN KEY (`gang_id`) REFERENCES `gangs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- JOB MEMBERS TABLE
+-- =====================================================
+-- Tracks job membership
+
+CREATE TABLE IF NOT EXISTS `job_members` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `job_id` INT NOT NULL,
+    `player_id` VARCHAR(50) NOT NULL,
+    `player_name` VARCHAR(50) NOT NULL,
+    `grade` INT DEFAULT 0 COMMENT 'Job grade (0=entry, higher=manager)',
+    `salary` INT DEFAULT 0 COMMENT 'Job salary per payment cycle',
+    `joined_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    -- Indexes
+    KEY `idx_job_id` (`job_id`),
+    KEY `idx_player_id` (`player_id`),
+    KEY `idx_grade` (`grade`),
+    
+    -- Foreign key
+    CONSTRAINT `fk_job_members_jobs` FOREIGN KEY (`job_id`) REFERENCES `jobs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
