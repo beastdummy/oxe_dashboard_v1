@@ -147,7 +147,7 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
     setDropQuantity(1)
   }
 
-  const handleDeleteItem = (slot: number) => {
+  const handleDeleteItem = () => {
     setDeleteItemName("")
     setDeleteQuantity(1)
     setShowDeleteDialog(true)
@@ -232,19 +232,6 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
 
   const totalWeight = inventoryItems.reduce((sum, item) => sum + item.totalWeight, 0)
   const maxWeight = 100000 // kg ficticio
-
-  const triggerAction = (action: string) => {
-    if (window.invokeNative) {
-      try {
-        window.invokeNative('triggerServerEvent', action, playerId)
-      } catch (err) {
-        console.error(`Error triggering ${action}:`, err)
-        alert(`Acción: ${action} (Dev Mode)`)
-      }
-    } else {
-      alert(`Acción: ${action} (Dev Mode)`)
-    }
-  }
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 pointer-events-none">
