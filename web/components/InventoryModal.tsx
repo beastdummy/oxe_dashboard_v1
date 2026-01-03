@@ -41,8 +41,6 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [deleteQuantity, setDeleteQuantity] = useState(1)
   const [deleteItemName, setDeleteItemName] = useState("")
-  const [showJsonEditor, setShowJsonEditor] = useState(false)
-  const [jsonContent, setJsonContent] = useState("")
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleHeaderMouseDown = (e: React.MouseEvent) => {
@@ -232,26 +230,6 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
     }
   }
 
-  const handleOpenJsonEditor = () => {
-    setJsonContent(JSON.stringify(inventoryItems, null, 2))
-    setShowJsonEditor(true)
-  }
-
-  const handleSaveJson = () => {
-    try {
-      const parsed = JSON.parse(jsonContent)
-      if (Array.isArray(parsed)) {
-        setInventoryItems(parsed)
-        setShowJsonEditor(false)
-        alert("Inventario actualizado desde JSON")
-      } else {
-        alert("El JSON debe ser un array")
-      }
-    } catch (err) {
-      alert("JSON inválido: " + (err as Error).message)
-    }
-  }
-
   const totalWeight = inventoryItems.reduce((sum, item) => sum + item.totalWeight, 0)
   const maxWeight = 100000 // kg ficticio
 
@@ -305,48 +283,7 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
           </Button>
         </div>
 
-        {/* Action Buttons Bar */}
-        <div className="border-t border-neutral-700 px-4 py-3 bg-neutral-900/80 flex gap-2 flex-wrap">
-          <Button
-            onClick={handleDropItem}
-            className="bg-green-600 hover:bg-green-700 text-white text-xs"
-            size="sm"
-          >
-            Soltar Item
-          </Button>
-          <Button
-            onClick={() => setShowDeleteDialog(true)}
-            className="bg-red-600 hover:bg-red-700 text-white text-xs"
-            size="sm"
-          >
-            Eliminar Item
-          </Button>
-          <Button
-            onClick={() => setShowGiveDialog(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
-            size="sm"
-          >
-            Dar Item
-          </Button>
-          <Button
-            onClick={() => {
-              if (window.invokeNative) {
-                try {
-                  window.invokeNative('triggerServerEvent', 'inventory:clearInventory', playerId)
-                } catch (err) {
-                  console.error('Error clearing inventory:', err)
-                  alert('Inventario borrado (Dev Mode)')
-                }
-              } else {
-                alert('Inventario borrado (Dev Mode)')
-              }
-            }}
-            className="bg-orange-600 hover:bg-orange-700 text-white text-xs"
-            size="sm"
-          >
-            Limpiar Todo
-          </Button>
-        </div>
+        {/* Inventory Grid */}
         <div className="flex-1 overflow-y-auto px-2 py-4">
           {inventoryItems.length === 0 ? (
             <div className="flex items-center justify-center h-full text-neutral-500">
@@ -475,13 +412,6 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
               Borrar Todo
             </Button>
           </div>
-          <Button
-            onClick={handleOpenJsonEditor}
-            className="w-full bg-neutral-700 hover:bg-neutral-600 text-white text-xs"
-            size="sm"
-          >
-            Editar JSON
-          </Button>
         </div>
 
         {/* Progress Bar */}
@@ -658,42 +588,6 @@ export function InventoryModal({ playerId, playerName, items, onClose }: Invento
                 size="sm"
               >
                 Confirmar
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* JSON Editor Dialog */}
-      {showJsonEditor && (
-        <div className="fixed inset-0 bg-black/50 z-[70] flex items-center justify-center pointer-events-auto">
-          <div className="bg-neutral-900 border border-orange-500/50 rounded-lg p-6 w-[90vw] h-[80vh] space-y-4 flex flex-col">
-            <div className="text-center">
-              <h3 className="text-lg font-bold text-white">Editor JSON - Inventario</h3>
-              <p className="text-xs text-neutral-400 mt-1">Edita el JSON directamente y guarda los cambios</p>
-            </div>
-
-            <textarea
-              value={jsonContent}
-              onChange={(e) => setJsonContent(e.target.value)}
-              className="flex-1 bg-neutral-800 border border-neutral-600 rounded-lg p-3 text-white text-xs font-mono resize-none"
-              spellCheck="false"
-            />
-
-            <div className="flex gap-2">
-              <Button
-                onClick={() => setShowJsonEditor(false)}
-                className="flex-1 bg-neutral-700 hover:bg-neutral-600 text-white"
-                size="sm"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleSaveJson}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
-                size="sm"
-              >
-                Guardar Cambios
               </Button>
             </div>
           </div>
