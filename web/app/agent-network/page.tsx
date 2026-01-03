@@ -405,7 +405,6 @@ export default function PlayersPage() {
               <Button
                 onClick={() => {
                   setSelectedPlayer(null)
-                  setShowActionsMenu(false)
                 }}
                 className="text-neutral-400 hover:text-white"
                 variant="ghost"
