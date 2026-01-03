@@ -1,0 +1,17 @@
+# Lua
+*.luac
+
+# Web
+web/build/
+web/node_modules/
+web/dist/
+
+# General
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea
+.vscode
+*.iml

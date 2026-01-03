@@ -1,0 +1,11 @@
+{
+  "Lua.workspace.library": [
+    "C:/Users/Adrian/Desktop/BEAST_OX/OX_PROYECT/repositorios/ox_types/types",
+    "C:/Users/Adrian/Desktop/BEAST_OX/OX_PROYECT/repositorios/ox_lib",
+    "C:/Users/Adrian/Desktop/BEAST_OX/OX_PROYECT/repositorios/qbox_types/types"
+  ],
+  "diagnostics.disable": [
+    "undefined-global",
+    "undefined-field"
+  ]
+}
