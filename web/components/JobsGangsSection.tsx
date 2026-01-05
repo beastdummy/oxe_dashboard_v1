@@ -11,6 +11,7 @@ import { JobModal } from "./JobModal"
 import { GangModal } from "./GangModal"
 import { MemberManagementModal } from "./MemberManagementModal"
 import { ConfirmDialog } from "./ConfirmDialog"
+import { OrganizationDetailModal } from "./OrganizationDetailModal"
 
 interface Job {
   id: string
@@ -149,6 +150,12 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
     onConfirm: () => {},
   })
 
+  // Detail Modal State
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [detailType, setDetailType] = useState<"job" | "gang">("job")
+  const [selectedJobDetail, setSelectedJobDetail] = useState<Job | null>(null)
+  const [selectedGangDetail, setSelectedGangDetail] = useState<Gang | null>(null)
+
   const filteredJobs = jobs.filter((job) =>
     job.name.toLowerCase().includes(searchJob.toLowerCase()) ||
     job.territory.toLowerCase().includes(searchJob.toLowerCase())
@@ -235,6 +242,12 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
     setShowJobModal(true)
   }
 
+  const handleViewJobDetail = (job: Job) => {
+    setSelectedJobDetail(job)
+    setDetailType("job")
+    setShowDetailModal(true)
+  }
+
   const handleJobModalSubmit = (jobData: any) => {
     if (editingJob) {
       handleUpdateJob(editingJob.id, jobData)
@@ -277,6 +290,12 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
   const handleEditGang = (gang: Gang) => {
     setEditingGang(gang)
     setShowGangModal(true)
+  }
+
+  const handleViewGangDetail = (gang: Gang) => {
+    setSelectedGangDetail(gang)
+    setDetailType("gang")
+    setShowDetailModal(true)
   }
 
   const handleGangModalSubmit = (gangData: any) => {
@@ -358,7 +377,8 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
               {filteredJobs.map((job) => (
                 <div
                   key={job.id}
-                  className="p-3 bg-neutral-800 border border-neutral-700 rounded hover:border-orange-500/50 transition-all group"
+                  className="p-3 bg-neutral-800 border border-neutral-700 rounded hover:border-orange-500/50 transition-all group cursor-pointer"
+                  onClick={() => handleViewJobDetail(job)}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2 flex-1">
@@ -387,7 +407,10 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleEditJob(job)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEditJob(job)
+                        }}
                         className="h-6 w-6 p-0 text-neutral-400 hover:text-orange-400"
                       >
                         <Edit2 className="w-3 h-3" />
@@ -395,7 +418,8 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation()
                           setConfirmDialog({
                             isOpen: true,
                             title: "Eliminar Job",
@@ -403,7 +427,7 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
                             onConfirm: () => handleDeleteJob(job.id),
                             isDangerous: true,
                           })
-                        }
+                        }}
                         className="h-6 w-6 p-0 text-neutral-400 hover:text-red-400"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -482,11 +506,12 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
               {filteredGangs.map((gang) => (
                 <div
                   key={gang.id}
-                  className={`p-3 border rounded transition-all group ${
+                  className={`p-3 border rounded transition-all group cursor-pointer ${
                     gang.status === "active"
                       ? "bg-neutral-800 border-neutral-700 hover:border-orange-500/50"
                       : "bg-neutral-800/50 border-neutral-700/50 opacity-60"
                   }`}
+                  onClick={() => handleViewGangDetail(gang)}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2 flex-1">
@@ -515,7 +540,10 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() => handleEditGang(gang)}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleEditGang(gang)
+                        }}
                         className="h-6 w-6 p-0 text-neutral-400 hover:text-orange-400"
                       >
                         <Edit2 className="w-3 h-3" />
@@ -523,7 +551,8 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
                       <Button
                         size="sm"
                         variant="ghost"
-                        onClick={() =>
+                        onClick={(e) => {
+                          e.stopPropagation()
                           setConfirmDialog({
                             isOpen: true,
                             title: "Eliminar Gang",
@@ -531,7 +560,7 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
                             onConfirm: () => handleDeleteGang(gang.id),
                             isDangerous: true,
                           })
-                        }
+                        }}
                         className="h-6 w-6 p-0 text-neutral-400 hover:text-red-400"
                       >
                         <Trash2 className="w-3 h-3" />
@@ -627,6 +656,42 @@ export function JobsGangsSection({ showTabs = true, showCreateButton = true, vie
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         onSubmit={handleCreateJobGangSubmit}
-      />    </div>
+      />
+
+      <OrganizationDetailModal
+        isOpen={showDetailModal}
+        onClose={() => {
+          setShowDetailModal(false)
+          setSelectedJobDetail(null)
+          setSelectedGangDetail(null)
+        }}
+        type={detailType}
+        data={
+          detailType === "job"
+            ? {
+                id: selectedJobDetail?.id || "",
+                name: selectedJobDetail?.name || "",
+                label: selectedJobDetail?.label || "",
+                color: selectedJobDetail?.color || "gray",
+                status: selectedJobDetail?.status || "active",
+                territory: selectedJobDetail?.territory || "",
+                members: selectedJobDetail?.members || 0,
+                treasury: selectedJobDetail?.treasury || 0,
+                level: selectedJobDetail?.level || 0,
+              }
+            : {
+                id: selectedGangDetail?.id || "",
+                name: selectedGangDetail?.name || "",
+                label: selectedGangDetail?.label || "",
+                color: selectedGangDetail?.color || "gray",
+                status: selectedGangDetail?.status || "active",
+                territory: selectedGangDetail?.territory || "",
+                leader: selectedGangDetail?.leader || "",
+                members: selectedGangDetail?.members || 0,
+                reputation: selectedGangDetail?.reputation || 0,
+              }
+        }
+      />
+    </div>
   )
 }
