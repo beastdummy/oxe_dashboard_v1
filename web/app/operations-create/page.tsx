@@ -13,7 +13,9 @@ export default function OperationsCreatePage() {
     name: "",
     label: "",
     description: "",
-    territory: "",
+    stashX: "0",
+    stashY: "0",
+    stashZ: "0",
     bankMoney: "10000",
     initialMoney: "5000",
     color: "orange",
@@ -45,7 +47,11 @@ export default function OperationsCreatePage() {
         name: formData.name,
         label: formData.label,
         description: formData.description,
-        territory: formData.territory || "Unknown",
+        stash: {
+          x: parseFloat(formData.stashX),
+          y: parseFloat(formData.stashY),
+          z: parseFloat(formData.stashZ),
+        },
         status: "active",
         color: formData.color,
         ...(formData.type === "job"
@@ -80,7 +86,9 @@ export default function OperationsCreatePage() {
         name: "",
         label: "",
         description: "",
-        territory: "",
+        stashX: "0",
+        stashY: "0",
+        stashZ: "0",
         bankMoney: "10000",
         initialMoney: "5000",
         color: "orange",
@@ -170,18 +178,48 @@ export default function OperationsCreatePage() {
                 </div>
               </div>
 
-              {/* Second Row - Territory, Color, Initial Money */}
+              {/* Second Row - Stash Coordinates and Color */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div>
-                  <label className="text-sm font-semibold text-white mb-2 block">Territorio</label>
-                  <Input
-                    type="text"
-                    name="territory"
-                    value={formData.territory}
-                    onChange={handleInputChange}
-                    placeholder="e.g., Downtown"
-                    className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
-                  />
+                <div className="lg:col-span-2">
+                  <label className="text-sm font-semibold text-white mb-2 block">Ubicación Stash Principal (Vec3)</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <label className="text-xs text-neutral-400 block mb-1">X</label>
+                      <Input
+                        type="number"
+                        name="stashX"
+                        value={formData.stashX}
+                        onChange={handleInputChange}
+                        placeholder="0"
+                        step="0.1"
+                        className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-neutral-400 block mb-1">Y</label>
+                      <Input
+                        type="number"
+                        name="stashY"
+                        value={formData.stashY}
+                        onChange={handleInputChange}
+                        placeholder="0"
+                        step="0.1"
+                        className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-neutral-400 block mb-1">Z</label>
+                      <Input
+                        type="number"
+                        name="stashZ"
+                        value={formData.stashZ}
+                        onChange={handleInputChange}
+                        placeholder="0"
+                        step="0.1"
+                        className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div>
@@ -202,7 +240,10 @@ export default function OperationsCreatePage() {
                     <option value="cyan" className="bg-neutral-800">🔷 Cyan</option>
                   </select>
                 </div>
+              </div>
 
+              {/* Third Row - Bank Money, Initial Money and Preview */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-green-500" />
@@ -217,10 +258,7 @@ export default function OperationsCreatePage() {
                     className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
                   />
                 </div>
-              </div>
 
-              {/* Third Row - Initial Money and Preview */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div>
                   <label className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
                     <DollarSign className="w-4 h-4 text-blue-500" />
@@ -237,7 +275,7 @@ export default function OperationsCreatePage() {
                 </div>
 
                 {/* Preview Card - Embedded */}
-                <div className="lg:col-span-2">
+                <div>
                   <label className="text-sm font-semibold text-white mb-2 block">Vista Previa</label>
                   <Card className="bg-neutral-800 border-neutral-700 h-full">
                     <CardContent className="p-4 flex flex-col justify-center h-full">
@@ -258,16 +296,16 @@ export default function OperationsCreatePage() {
                               }[formData.color] || "#f97316",
                             }}
                           />
-                          <span className="text-white font-semibold">{formData.name || "(Nombre)"}</span>
+                          <span className="text-white font-semibold text-sm">{formData.name || "(Nombre)"}</span>
                           <Badge className="bg-orange-500/30 text-orange-400 text-xs">
                             {formData.type === "job" ? <Briefcase className="w-3 h-3 mr-1" /> : <Users className="w-3 h-3 mr-1" />}
                             {formData.type === "job" ? "Job" : "Gang"}
                           </Badge>
                         </div>
                         <p className="text-neutral-400 text-xs">{formData.label || "(Label)"}</p>
-                        {formData.territory && (
-                          <p className="text-neutral-400 text-xs">📍 {formData.territory}</p>
-                        )}
+                        <p className="text-neutral-400 text-xs">
+                          📍 Stash: ({formData.stashX}, {formData.stashY}, {formData.stashZ})
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -304,7 +342,9 @@ export default function OperationsCreatePage() {
                       name: "",
                       label: "",
                       description: "",
-                      territory: "",
+                      stashX: "0",
+                      stashY: "0",
+                      stashZ: "0",
                       bankMoney: "10000",
                       initialMoney: "5000",
                       color: "orange",
