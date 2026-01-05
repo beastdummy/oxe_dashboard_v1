@@ -2,11 +2,15 @@
 
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { DollarSign, Briefcase, Users, CheckCircle, XCircle } from "lucide-react"
+import { DollarSign, Briefcase, Users, CheckCircle, XCircle, TrendingUp, TrendingDown } from "lucide-react"
 import { JobsGangsSection } from "@/components/JobsGangsSection"
 
 export default function OperationsPage() {
+  const [selectedEntity, setSelectedEntity] = useState<"gang1" | "gang2" | "job1" | null>("gang1")
+  const [timeRange, setTimeRange] = useState<"weekly" | "monthly">("weekly")
+
   // Mock data - in a real app, this would come from props or API
   const jobsStats = {
     total: 23,
@@ -19,6 +23,32 @@ export default function OperationsPage() {
     active: 3,
     defeated: 1,
   }
+
+  // Mock entities for selection
+  const entities = [
+    { id: "gang1", name: "Shadow Cartel", type: "gang" },
+    { id: "gang2", name: "Iron Brotherhood", type: "gang" },
+    { id: "job1", name: "Police Department", type: "job" },
+  ]
+
+  // Weekly income/expense data
+  const weeklyData = [
+    { name: "Mon", income: 45000, expense: 12000 },
+    { name: "Tue", income: 52000, expense: 15000 },
+    { name: "Wed", income: 38000, expense: 10000 },
+    { name: "Thu", income: 61000, expense: 18000 },
+    { name: "Fri", income: 55000, expense: 14000 },
+    { name: "Sat", income: 72000, expense: 20000 },
+    { name: "Sun", income: 48000, expense: 11000 },
+  ]
+
+  // Monthly income/expense data
+  const monthlyData = [
+    { name: "Week 1", income: 232000, expense: 60000 },
+    { name: "Week 2", income: 248000, expense: 65000 },
+    { name: "Week 3", income: 256000, expense: 68000 },
+    { name: "Week 4", income: 268000, expense: 70000 },
+  ]
 
   // Mock data for jobs
   const jobsData = [
@@ -43,17 +73,6 @@ export default function OperationsPage() {
   // Chart colors
   const COLORS = ["#10b981", "#ef4444"]
   const gangColors = ["#8b5cf6", "#ec4899", "#f43f5e", "#06b6d4"]
-
-  // Data for bar chart
-  const activityData = [
-    { name: "Mon", jobs: 4, gangs: 6 },
-    { name: "Tue", jobs: 3, gangs: 8 },
-    { name: "Wed", jobs: 5, gangs: 5 },
-    { name: "Thu", jobs: 6, gangs: 7 },
-    { name: "Fri", jobs: 4, gangs: 9 },
-    { name: "Sat", jobs: 7, gangs: 4 },
-    { name: "Sun", jobs: 2, gangs: 6 },
-  ]
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-US", {
@@ -207,23 +226,148 @@ export default function OperationsPage() {
         </Card>
       </div>
 
-      {/* Activity Chart */}
+      {/* Financial Activity Chart */}
       <Card className="bg-neutral-900 border-neutral-700">
-        <CardHeader>
-          <CardTitle className="text-sm font-bold text-white tracking-wider">WEEKLY ACTIVITY</CardTitle>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between mb-4">
+            <CardTitle className="text-sm font-bold text-white tracking-wider">FINANCIAL ACTIVITY</CardTitle>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={() => setTimeRange("weekly")}
+                variant={timeRange === "weekly" ? "default" : "outline"}
+                className={`text-xs ${
+                  timeRange === "weekly"
+                    ? "bg-orange-500 hover:bg-orange-600"
+                    : "border-neutral-600 text-neutral-400 hover:bg-neutral-800"
+                }`}
+              >
+                Weekly
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => setTimeRange("monthly")}
+                variant={timeRange === "monthly" ? "default" : "outline"}
+                className={`text-xs ${
+                  timeRange === "monthly"
+                    ? "bg-orange-500 hover:bg-orange-600"
+                    : "border-neutral-600 text-neutral-400 hover:bg-neutral-800"
+                }`}
+              >
+                Monthly
+              </Button>
+            </div>
+          </div>
+
+          {/* Entity Selection */}
+          <div className="flex gap-2 flex-wrap">
+            {entities.map((entity) => (
+              <button
+                key={entity.id}
+                onClick={() => setSelectedEntity(entity.id as any)}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  selectedEntity === entity.id
+                    ? "bg-orange-500 text-white"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                }`}
+              >
+                {entity.type === "gang" ? (
+                  <Users className="w-3 h-3 inline mr-1" />
+                ) : (
+                  <Briefcase className="w-3 h-3 inline mr-1" />
+                )}
+                {entity.name}
+              </button>
+            ))}
+          </div>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={activityData}>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={timeRange === "weekly" ? weeklyData : monthlyData}>
               <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
               <XAxis dataKey="name" stroke="#737373" />
               <YAxis stroke="#737373" />
-              <Tooltip contentStyle={{ backgroundColor: "#1f2937", border: "1px solid #404040" }} />
+              <Tooltip
+                contentStyle={{ backgroundColor: "#1f2937", border: "1px solid #404040" }}
+                formatter={(value) => [
+                  new Intl.NumberFormat("en-US", {
+                    style: "currency",
+                    currency: "USD",
+                    minimumFractionDigits: 0,
+                  }).format(value as number),
+                ]}
+              />
               <Legend />
-              <Bar dataKey="jobs" fill="#10b981" name="Jobs" />
-              <Bar dataKey="gangs" fill="#8b5cf6" name="Gangs" />
+              <Bar dataKey="income" fill="#10b981" name="Income" radius={[8, 8, 0, 0]} />
+              <Bar dataKey="expense" fill="#ef4444" name="Expenses" radius={[8, 8, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
+
+          {/* Summary Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            <div className="bg-neutral-800 p-3 rounded">
+              <p className="text-xs text-neutral-400 mb-1">Total Income</p>
+              <p className="text-lg font-bold text-green-500">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 0,
+                }).format(
+                  (timeRange === "weekly" ? weeklyData : monthlyData).reduce(
+                    (acc, d) => acc + d.income,
+                    0
+                  )
+                )}
+              </p>
+            </div>
+            <div className="bg-neutral-800 p-3 rounded">
+              <p className="text-xs text-neutral-400 mb-1">Total Expenses</p>
+              <p className="text-lg font-bold text-red-500">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 0,
+                }).format(
+                  (timeRange === "weekly" ? weeklyData : monthlyData).reduce(
+                    (acc, d) => acc + d.expense,
+                    0
+                  )
+                )}
+              </p>
+            </div>
+            <div className="bg-neutral-800 p-3 rounded">
+              <p className="text-xs text-neutral-400 mb-1">Net Profit</p>
+              <p className="text-lg font-bold text-blue-500">
+                {new Intl.NumberFormat("en-US", {
+                  style: "currency",
+                  currency: "USD",
+                  minimumFractionDigits: 0,
+                }).format(
+                  (timeRange === "weekly" ? weeklyData : monthlyData).reduce(
+                    (acc, d) => acc + d.income - d.expense,
+                    0
+                  )
+                )}
+              </p>
+            </div>
+            <div className="bg-neutral-800 p-3 rounded">
+              <p className="text-xs text-neutral-400 mb-1">Profit Margin</p>
+              <p className="text-lg font-bold text-purple-500">
+                {(
+                  ((timeRange === "weekly" ? weeklyData : monthlyData).reduce(
+                    (acc, d) => acc + d.income - d.expense,
+                    0
+                  ) /
+                    (timeRange === "weekly" ? weeklyData : monthlyData).reduce(
+                      (acc, d) => acc + d.income,
+                      0
+                    )) *
+                  100
+                ).toFixed(1)}
+                %
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
