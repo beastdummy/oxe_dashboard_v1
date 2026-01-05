@@ -139,6 +139,7 @@ export interface Mission {
   timeLimit?: number
   requiredItems?: string[]
   minLevel?: number
+  thumbnail?: string // Base64 image data
   createdBy: string
   createdAt: string
   updatedAt: string

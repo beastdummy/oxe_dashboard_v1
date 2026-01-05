@@ -21,11 +21,16 @@ import {
   Zap,
 } from "lucide-react"
 import type { Mission, MissionListItem, MissionDifficulty } from "@/lib/types/missions"
+import MissionDetailModal from "./MissionDetailModal"
+import MissionEditModal from "./MissionEditModal"
 
 export default function MissionsSection() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedTab, setSelectedTab] = useState<"list" | "create" | "edit">("list")
   const [selectedMission, setSelectedMission] = useState<Mission | null>(null)
+  const [editingMission, setEditingMission] = useState<Mission | null>(null)
+  const [showDetailModal, setShowDetailModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
   const [filterDifficulty, setFilterDifficulty] = useState<MissionDifficulty | "all">("all")
   const [filterStatus, setFilterStatus] = useState<"active" | "draft" | "completed" | "all">("all")
 
@@ -237,6 +242,10 @@ export default function MissionsSection() {
                     <Button
                       size="sm"
                       className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => {
+                        setSelectedMission(mission as any)
+                        setShowDetailModal(true)
+                      }}
                     >
                       <Eye className="w-4 h-4 mr-1" />
                       Ver
@@ -245,6 +254,10 @@ export default function MissionsSection() {
                       size="sm"
                       variant="outline"
                       className="flex-1 border-neutral-600 text-neutral-300 hover:text-white"
+                      onClick={() => {
+                        setEditingMission(mission as any)
+                        setShowEditModal(true)
+                      }}
                     >
                       <Edit className="w-4 h-4 mr-1" />
                       Editar
@@ -277,6 +290,39 @@ export default function MissionsSection() {
         <div className="px-6">
           <MissionBuilder />
         </div>
+      )}
+
+      {/* Detail Modal */}
+      {showDetailModal && selectedMission && (
+        <MissionDetailModal
+          mission={selectedMission}
+          onClose={() => {
+            setShowDetailModal(false)
+            setSelectedMission(null)
+          }}
+          onEdit={() => {
+            setShowDetailModal(false)
+            setEditingMission(selectedMission)
+            setShowEditModal(true)
+          }}
+        />
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && editingMission && (
+        <MissionEditModal
+          mission={editingMission}
+          onClose={() => {
+            setShowEditModal(false)
+            setEditingMission(null)
+          }}
+          onSave={(updatedMission) => {
+            console.log("Mission updated:", updatedMission)
+            setShowEditModal(false)
+            setEditingMission(null)
+            // Here you would call the backend to save the mission
+          }}
+        />
       )}
     </div>
   )
