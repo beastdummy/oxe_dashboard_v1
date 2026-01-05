@@ -34,8 +34,8 @@ export default function MissionsSection() {
   const [filterDifficulty, setFilterDifficulty] = useState<MissionDifficulty | "all">("all")
   const [filterStatus, setFilterStatus] = useState<"active" | "draft" | "completed" | "all">("all")
 
-  // Mock data
-  const missions: MissionListItem[] = [
+  // Mock data - Complete Mission objects
+  const missions: (MissionListItem & Partial<Mission>)[] = [
     {
       id: "MISSION-001",
       name: "jewelry_heist",
@@ -45,6 +45,31 @@ export default function MissionsSection() {
       status: "active",
       completionRate: 85,
       rewards: { xp: 5000, money: 50000 },
+      description: "Infiltrate a high-security jewelry store and steal the priceless diamond collection without triggering the alarm system.",
+      startLocation: { x: 100, y: 200, z: 50 },
+      objectives: [
+        { id: "obj1", title: "Disable Alarm", description: "Find and disable the security alarm", type: "hack", target: "alarm_panel", completed: false },
+        { id: "obj2", title: "Open Safe", description: "Crack the vault safe", type: "hack", target: "safe", completed: false },
+        { id: "obj3", title: "Escape", description: "Get away from the store", type: "location", completed: false },
+      ],
+      npcs: [
+        { id: "npc1", name: "Manager Bob", type: "civilian", model: "a_m_m_business_1", coordinates: { x: 110, y: 210, z: 50 }, heading: 0, dialogue: [], behavior: "static" },
+      ],
+      props: [
+        { id: "prop1", name: "Display Case", model: "prop_counter", type: "decoration", coordinates: { x: 105, y: 205, z: 50 }, heading: 0 },
+      ],
+      vehicles: [],
+      oxTargets: [],
+      minigames: [
+        { type: "hack", difficulty: 2, reward: { xp: 500 }, timeLimit: 30 },
+      ],
+      securitySystems: [
+        { id: "sec1", type: "laser", coordinates: { x: 100, y: 200, z: 50 }, config: { hasLasers: true } },
+      ],
+      minLevel: 10,
+      createdBy: "admin",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     {
       id: "MISSION-002",
@@ -55,6 +80,25 @@ export default function MissionsSection() {
       status: "active",
       completionRate: 92,
       rewards: { xp: 2500, money: 25000 },
+      description: "Deliver the package to the warehouse without getting caught by the police.",
+      startLocation: { x: 150, y: 250, z: 40 },
+      objectives: [
+        { id: "obj4", title: "Pick Up Package", description: "Get the package from the supplier", type: "collect", target: "package", completed: false },
+        { id: "obj5", title: "Avoid Police", description: "Stay away from police patrols", type: "location", completed: false },
+        { id: "obj6", title: "Deliver Package", description: "Reach the warehouse location", type: "location", completed: false },
+      ],
+      npcs: [],
+      props: [],
+      vehicles: [
+        { id: "veh1", model: "speedo", coordinates: { x: 160, y: 260, z: 40 }, heading: 90, locked: true, jobOwned: true },
+      ],
+      oxTargets: [],
+      minigames: [],
+      securitySystems: [],
+      minLevel: 5,
+      createdBy: "admin",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     {
       id: "MISSION-003",
@@ -65,6 +109,27 @@ export default function MissionsSection() {
       status: "draft",
       completionRate: 0,
       rewards: { xp: 10000, money: 100000 },
+      description: "Eliminate the target without leaving any witnesses or evidence.",
+      startLocation: { x: 200, y: 300, z: 60 },
+      objectives: [
+        { id: "obj7", title: "Scout Location", description: "Find the target's location", type: "location", completed: false },
+        { id: "obj8", title: "Eliminate Target", description: "Remove the target permanently", type: "kill", target: "boss", completed: false },
+        { id: "obj9", title: "Escape", description: "Leave the area without being seen", type: "location", completed: false },
+      ],
+      npcs: [
+        { id: "npc2", name: "Target", type: "boss", model: "a_m_m_business_2", coordinates: { x: 210, y: 310, z: 60 }, heading: 180, dialogue: [], behavior: "patrol" },
+      ],
+      props: [],
+      vehicles: [],
+      oxTargets: [],
+      minigames: [],
+      securitySystems: [
+        { id: "sec2", type: "camera", coordinates: { x: 200, y: 300, z: 60 }, config: { hasCamera: true } },
+      ],
+      minLevel: 20,
+      createdBy: "admin",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
     {
       id: "MISSION-004",
@@ -75,6 +140,29 @@ export default function MissionsSection() {
       status: "active",
       completionRate: 78,
       rewards: { xp: 3000, money: 30000 },
+      description: "Break into the warehouse and steal the valuable goods before the shipment arrives.",
+      startLocation: { x: 250, y: 350, z: 30 },
+      objectives: [
+        { id: "obj10", title: "Break In", description: "Get inside the warehouse", type: "hack", completed: false },
+        { id: "obj11", title: "Collect Items", description: "Find and collect all valuable items", type: "collect", completed: false },
+        { id: "obj12", title: "Escape", description: "Get out with the loot", type: "location", completed: false },
+      ],
+      npcs: [],
+      props: [
+        { id: "prop2", name: "Crate", model: "prop_crate_01", type: "furniture", coordinates: { x: 260, y: 360, z: 30 }, heading: 0 },
+      ],
+      vehicles: [
+        { id: "veh2", model: "boxville", coordinates: { x: 270, y: 370, z: 30 }, heading: 270, locked: false },
+      ],
+      oxTargets: [],
+      minigames: [
+        { type: "lockpick", difficulty: 1, reward: { xp: 300 }, timeLimit: 20 },
+      ],
+      securitySystems: [],
+      minLevel: 8,
+      createdBy: "admin",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     },
   ]
 
