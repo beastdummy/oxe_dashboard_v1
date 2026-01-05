@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Briefcase, Users, MapPin, DollarSign, Trophy, TrendingUp, Target, Edit2, Trash2, Plus, MoreHorizontal } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { CreateJobGangModal } from "./CreateJobGangModal"
 import { JobModal } from "./JobModal"
 import { GangModal } from "./GangModal"
 import { MemberManagementModal } from "./MemberManagementModal"
@@ -112,6 +113,9 @@ export function JobsGangsSection() {
   const [searchGang, setSearchGang] = useState("")
   const [selectedTab, setSelectedTab] = useState<"jobs" | "gangs">("jobs")
 
+  // Create Job/Gang Modal State
+  const [showCreateModal, setShowCreateModal] = useState(false)
+
   // Job Modal State
   const [showJobModal, setShowJobModal] = useState(false)
   const [editingJob, setEditingJob] = useState<Job | null>(null)
@@ -161,6 +165,33 @@ export function JobsGangsSection() {
     if (reputation >= 8000) return "text-orange-500"
     if (reputation >= 7000) return "text-blue-500"
     return "text-neutral-400"
+  }
+
+  // Create Job/Gang Modal Handler
+  const handleCreateJobGangSubmit = (data: any) => {
+    if (data.type === "job") {
+      const jobData = {
+        name: data.name,
+        label: data.label,
+        territory: data.territory,
+        color: data.color,
+        status: data.status,
+        description: data.description,
+        paymentRate: data.paymentRate,
+      }
+      handleCreateJob(jobData)
+    } else {
+      const gangData = {
+        name: data.name,
+        label: data.label,
+        territory: data.territory,
+        color: data.color,
+        status: data.status,
+        description: data.description,
+        leader: data.leader,
+      }
+      handleCreateGang(gangData)
+    }
   }
 
   // Job handlers
@@ -291,14 +322,11 @@ export function JobsGangsSection() {
               </CardTitle>
               <Button
                 size="sm"
-                onClick={() => {
-                  setEditingJob(null)
-                  setShowJobModal(true)
-                }}
-                className="bg-orange-500 hover:bg-orange-600 h-8"
+                onClick={() => setShowCreateModal(true)}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
               >
-                <Plus className="w-3 h-3 mr-1" />
-                Nuevo
+                <Plus className="w-4 h-4 mr-1" />
+                Create
               </Button>
             </div>
 
@@ -416,14 +444,11 @@ export function JobsGangsSection() {
               </CardTitle>
               <Button
                 size="sm"
-                onClick={() => {
-                  setEditingGang(null)
-                  setShowGangModal(true)
-                }}
+                onClick={() => setShowCreateModal(true)}
                 className="bg-orange-500 hover:bg-orange-600 h-8"
               >
                 <Plus className="w-3 h-3 mr-1" />
-                Nuevo
+                Create
               </Button>
             </div>
 
@@ -584,6 +609,12 @@ export function JobsGangsSection() {
           setConfirmDialog({ ...confirmDialog, isOpen: false })
         }}
         onCancel={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
+      />
+
+      <CreateJobGangModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreateJobGangSubmit}
       />    </div>
   )
 }
