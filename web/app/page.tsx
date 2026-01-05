@@ -8,6 +8,7 @@ import AgentNetworkPage from "./agent-network/page"
 import OperationsPage from "./operations/page"
 import OperationsJobsPage from "./operations-jobs/page"
 import OperationsGangsPage from "./operations-gangs/page"
+import OperationsCreatePage from "./operations-create/page"
 import IntelligencePage from "./intelligence/page"
 import SystemsPage from "./systems/page"
 import ActivityPage from "./activity/page"
@@ -193,6 +194,7 @@ export default function TacticalDashboard() {
           {activeSection === "operations" && <OperationsPage />}
           {activeSection === "operations-jobs" && <OperationsJobsPage />}
           {activeSection === "operations-gangs" && <OperationsGangsPage />}
+          {activeSection === "operations-create" && <OperationsCreatePage />}
           {activeSection === "intelligence" && <IntelligencePage />}
           {activeSection === "systems" && <SystemsPage />}
           {activeSection === "activity" && <ActivityPage />}
