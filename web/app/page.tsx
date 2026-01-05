@@ -18,7 +18,6 @@ import { useModals } from "@/context/ModalsContext"
 export default function TacticalDashboard() {
   const [activeSection, setActiveSection] = useState("overview")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
   const t = useTranslation()
   const { language, setLanguage } = useLanguage()
   const { minimizeDashboard, closeDashboard } = useModals()
@@ -59,36 +58,21 @@ export default function TacticalDashboard() {
               <div key={item.id}>
                 <button
                   onClick={() => {
-                    if (item.submenu) {
-                      setExpandedMenu(expandedMenu === item.id ? null : item.id)
-                    } else {
-                      setActiveSection(item.id)
-                      setExpandedMenu(null)
-                    }
+                    setActiveSection(item.id)
                   }}
                   className={`w-full flex items-center gap-3 p-3 rounded transition-colors ${
-                    activeSection === item.id
+                    activeSection === item.id || 
+                    (item.submenu && (activeSection === "operations-jobs" || activeSection === "operations-gangs" || activeSection === "operations-create"))
                       ? "bg-orange-500 text-white"
                       : "text-neutral-400 hover:text-white hover:bg-neutral-800"
                   }`}
                 >
                   <item.icon className="w-5 h-5 md:w-5 md:h-5 sm:w-6 sm:h-6" />
-                  {!sidebarCollapsed && (
-                    <>
-                      <span className="text-sm font-medium">{item.label}</span>
-                      {item.submenu && (
-                        <ChevronRight
-                          className={`w-4 h-4 ml-auto transition-transform ${
-                            expandedMenu === item.id ? "rotate-90" : ""
-                          }`}
-                        />
-                      )}
-                    </>
-                  )}
+                  {!sidebarCollapsed && <span className="text-sm font-medium">{item.label}</span>}
                 </button>
 
-                {/* Submenu */}
-                {item.submenu && expandedMenu === item.id && !sidebarCollapsed && (
+                {/* Submenu - Always Visible */}
+                {item.submenu && !sidebarCollapsed && (
                   <div className="ml-4 mt-2 space-y-1 border-l border-neutral-700 pl-2">
                     <button
                       onClick={() => {
