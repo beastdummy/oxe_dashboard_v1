@@ -46,6 +46,7 @@ export default function MissionsSection() {
       completionRate: 85,
       rewards: { xp: 5000, money: 50000 },
       description: "Infiltrate a high-security jewelry store and steal the priceless diamond collection without triggering the alarm system.",
+      thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff6b00;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%238b0000;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Ccircle cx='200' cy='150' r='60' fill='%23ffd700' opacity='0.8'/%3E%3Ctext x='200' y='160' text-anchor='middle' fill='white' font-size='24' font-weight='bold'%3E💎%3C/text%3E%3C/svg%3E",
       startLocation: { x: 100, y: 200, z: 50 },
       objectives: [
         { id: "obj1", title: "Disable Alarm", description: "Find and disable the security alarm", type: "hack", target: "alarm_panel", completed: false },
@@ -81,6 +82,7 @@ export default function MissionsSection() {
       completionRate: 92,
       rewards: { xp: 2500, money: 25000 },
       description: "Deliver the package to the warehouse without getting caught by the police.",
+      thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%231e90ff;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%230047ab;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Crect x='50' y='80' width='300' height='140' fill='%23333' stroke='%23aaa' stroke-width='4'/%3E%3Ctext x='200' y='160' text-anchor='middle' fill='white' font-size='28' font-weight='bold'%3E📦%3C/text%3E%3C/svg%3E",
       startLocation: { x: 150, y: 250, z: 40 },
       objectives: [
         { id: "obj4", title: "Pick Up Package", description: "Get the package from the supplier", type: "collect", target: "package", completed: false },
@@ -110,6 +112,7 @@ export default function MissionsSection() {
       completionRate: 0,
       rewards: { xp: 10000, money: 100000 },
       description: "Eliminate the target without leaving any witnesses or evidence.",
+      thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23800000;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23000;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Ccircle cx='200' cy='150' r='50' fill='none' stroke='%23ff0000' stroke-width='3'/%3E%3Cline x1='150' y1='150' x2='250' y2='150' stroke='%23ff0000' stroke-width='2'/%3E%3Cline x1='200' y1='100' x2='200' y2='200' stroke='%23ff0000' stroke-width='2'/%3E%3Ctext x='200' y='240' text-anchor='middle' fill='white' font-size='20'%3E🎯 TARGET%3C/text%3E%3C/svg%3E",
       startLocation: { x: 200, y: 300, z: 60 },
       objectives: [
         { id: "obj7", title: "Scout Location", description: "Find the target's location", type: "location", completed: false },
@@ -141,6 +144,7 @@ export default function MissionsSection() {
       completionRate: 78,
       rewards: { xp: 3000, money: 30000 },
       description: "Break into the warehouse and steal the valuable goods before the shipment arrives.",
+      thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff8c00;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff4500;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='400' height='300' fill='url(%23grad)'/%3E%3Crect x='30' y='60' width='100' height='150' fill='%23222' stroke='%23aaa' stroke-width='3'/%3E%3Crect x='160' y='60' width='100' height='150' fill='%23333' stroke='%23bbb' stroke-width='3'/%3E%3Crect x='290' y='60' width='80' height='150' fill='%23222' stroke='%23aaa' stroke-width='3'/%3E%3Ctext x='200' y='260' text-anchor='middle' fill='white' font-size='20' font-weight='bold'%3E🏭 WAREHOUSE%3C/text%3E%3C/svg%3E",
       startLocation: { x: 250, y: 350, z: 30 },
       objectives: [
         { id: "obj10", title: "Break In", description: "Get inside the warehouse", type: "hack", completed: false },
@@ -304,29 +308,32 @@ export default function MissionsSection() {
                   </div>
                 </CardHeader>
 
-                <CardContent className="p-4 space-y-3">
-                  {/* Mission Stats */}
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="flex items-center gap-2 text-neutral-300">
-                      <Users className="w-4 h-4 text-purple-400" />
-                      <span>Players: {mission.completionRate}%</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-neutral-300">
-                      <Zap className="w-4 h-4 text-yellow-400" />
-                      <span>XP: {mission.rewards.xp.toLocaleString()}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-neutral-300">
-                      <MapPin className="w-4 h-4 text-green-400" />
-                      <span>Type: {mission.type}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-neutral-300">
-                      <Lock className="w-4 h-4 text-red-400" />
-                      <span>Reward: ${mission.rewards.money?.toLocaleString()}</span>
-                    </div>
-                  </div>
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    {/* Left side - Info */}
+                    <div className="flex-1 space-y-3">
+                      {/* Mission Stats */}
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+                        <div className="flex items-center gap-2 text-neutral-300">
+                          <Users className="w-4 h-4 text-purple-400" />
+                          <span>Players: {mission.completionRate}%</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-neutral-300">
+                          <Zap className="w-4 h-4 text-yellow-400" />
+                          <span>XP: {mission.rewards.xp.toLocaleString()}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-neutral-300">
+                          <MapPin className="w-4 h-4 text-green-400" />
+                          <span>Type: {mission.type}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-neutral-300">
+                          <Lock className="w-4 h-4 text-red-400" />
+                          <span>Reward: ${mission.rewards.money?.toLocaleString()}</span>
+                        </div>
+                      </div>
 
-                  {/* Actions */}
-                  <div className="flex gap-2 pt-2 border-t border-neutral-700">
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-2 border-t border-neutral-700">
                     <Button
                       size="sm"
                       className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
@@ -357,6 +364,19 @@ export default function MissionsSection() {
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
+                  </div>
+                    </div>
+
+                    {/* Right side - Thumbnail */}
+                    {mission.thumbnail && (
+                      <div className="hidden sm:block w-24 h-24 flex-shrink-0">
+                        <img
+                          src={mission.thumbnail}
+                          alt={mission.label}
+                          className="w-full h-full object-cover rounded border border-neutral-700"
+                        />
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
