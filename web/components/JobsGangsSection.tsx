@@ -36,7 +36,13 @@ interface Gang {
   status: "active" | "defeated"
 }
 
-export function JobsGangsSection() {
+interface JobsGangsSectionProps {
+  showTabs?: boolean
+  showCreateButton?: boolean
+  viewMode?: "all" | "jobs-only" | "gangs-only"
+}
+
+export function JobsGangsSection({ showTabs = true, showCreateButton = true, viewMode = "all" }: JobsGangsSectionProps = {}) {
   const [jobs, setJobs] = useState<Job[]>([
     {
       id: "job_1",
@@ -284,50 +290,54 @@ export function JobsGangsSection() {
 
   return (
     <div className="space-y-4">
-      {/* Tabs */}
-      <div className="flex gap-2">
-        <Button
-          onClick={() => setSelectedTab("jobs")}
-          variant={selectedTab === "jobs" ? "default" : "outline"}
-          className={`text-sm ${
-            selectedTab === "jobs"
-              ? "bg-orange-500 hover:bg-orange-600"
-              : "border-neutral-600 text-neutral-400"
-          }`}
-        >
-          <Briefcase className="w-4 h-4 mr-2" />
-          Jobs ({jobs.length})
-        </Button>
-        <Button
-          onClick={() => setSelectedTab("gangs")}
-          variant={selectedTab === "gangs" ? "default" : "outline"}
-          className={`text-sm ${
-            selectedTab === "gangs"
-              ? "bg-orange-500 hover:bg-orange-600"
-              : "border-neutral-600 text-neutral-400"
-          }`}
-        >
-          <Users className="w-4 h-4 mr-2" />
-          Gangs ({gangs.length})
-        </Button>
-      </div>
+      {/* Tabs - Only show if showTabs is true */}
+      {showTabs && (
+        <div className="flex gap-2">
+          <Button
+            onClick={() => setSelectedTab("jobs")}
+            variant={selectedTab === "jobs" ? "default" : "outline"}
+            className={`text-sm ${
+              selectedTab === "jobs"
+                ? "bg-orange-500 hover:bg-orange-600"
+                : "border-neutral-600 text-neutral-400"
+            }`}
+          >
+            <Briefcase className="w-4 h-4 mr-2" />
+            Jobs ({jobs.length})
+          </Button>
+          <Button
+            onClick={() => setSelectedTab("gangs")}
+            variant={selectedTab === "gangs" ? "default" : "outline"}
+            className={`text-sm ${
+              selectedTab === "gangs"
+                ? "bg-orange-500 hover:bg-orange-600"
+                : "border-neutral-600 text-neutral-400"
+            }`}
+          >
+            <Users className="w-4 h-4 mr-2" />
+            Gangs ({gangs.length})
+          </Button>
+        </div>
+      )}
 
       {/* JOBS TAB */}
-      {selectedTab === "jobs" && (
+      {(showTabs ? selectedTab === "jobs" : viewMode !== "gangs-only") && (
         <Card className="bg-neutral-900 border-neutral-700">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-3">
               <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">
                 JOBS / ORGANIZATIONS
               </CardTitle>
-              <Button
-                size="sm"
-                onClick={() => setShowCreateModal(true)}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Create
-              </Button>
+              {showCreateButton && (
+                <Button
+                  size="sm"
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Create
+                </Button>
+              )}
             </div>
 
             {/* Search */}
@@ -435,21 +445,23 @@ export function JobsGangsSection() {
       )}
 
       {/* GANGS TAB */}
-      {selectedTab === "gangs" && (
+      {(showTabs ? selectedTab === "gangs" : viewMode !== "jobs-only") && (
         <Card className="bg-neutral-900 border-neutral-700">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between mb-3">
               <CardTitle className="text-sm font-medium text-neutral-300 tracking-wider">
                 GANGS / FACTIONS
               </CardTitle>
-              <Button
-                size="sm"
-                onClick={() => setShowCreateModal(true)}
-                className="bg-orange-500 hover:bg-orange-600 h-8"
-              >
-                <Plus className="w-3 h-3 mr-1" />
-                Create
-              </Button>
+              {showCreateButton && (
+                <Button
+                  size="sm"
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-orange-500 hover:bg-orange-600 h-8"
+                >
+                  <Plus className="w-3 h-3 mr-1" />
+                  Create
+                </Button>
+              )}
             </div>
 
             {/* Search */}
