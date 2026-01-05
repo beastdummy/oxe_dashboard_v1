@@ -279,7 +279,7 @@ export default function MissionsSection() {
           </Card>
 
           {/* Missions Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {filteredMissions.map((mission) => (
               <Card
                 key={mission.id}
@@ -309,7 +309,7 @@ export default function MissionsSection() {
                 </CardHeader>
 
                 <CardContent className="p-4">
-                  <div className="flex gap-4">
+                  <div className="flex gap-6">
                     {/* Left side - Info */}
                     <div className="flex-1 space-y-3">
                       {/* Mission Stats */}
@@ -369,7 +369,7 @@ export default function MissionsSection() {
 
                     {/* Right side - Thumbnail */}
                     {mission.thumbnail && (
-                      <div className="hidden sm:block w-24 h-24 flex-shrink-0">
+                      <div className="w-40 h-40 flex-shrink-0">
                         <img
                           src={mission.thumbnail}
                           alt={mission.label}
