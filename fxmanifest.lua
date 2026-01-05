@@ -26,6 +26,7 @@ client_scripts {
   'client/inventory.lua',
   'client/actions.lua',
   'client/tickets.lua',
+  'client/missions.lua',
 }
 
 server_scripts {
@@ -34,6 +35,7 @@ server_scripts {
   'server/inventory.lua',
   'server/actions.lua',
   'server/tickets.lua',
+  'server/missions.lua',
 }
 
 dependencies {
