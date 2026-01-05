@@ -10,12 +10,23 @@ A **production-ready admin dashboard system** for FiveM servers, built with Reac
 
 ## ✨ Features
 
-### 🎯 Admin Panel
+### � Admin Panel
 - **8 Admin Actions** - Traer, Ir a Jugador, Sanar, Congelar, Golpear, Quemar, Electrocutar, Matar
 - **Player Management** - View, filter, and manage players
 - **Inventory System** - Give, drop, delete items with server validation
 - **Independent Modals** - Modals persist when dashboard is minimized
 - **Draggable Interface** - All modals and controls are movable
+
+### 🎯 Missions System
+- **Mission Builder** - Create complex missions with visual step-by-step interface
+- **NPC Management** - Spawn bosses, guards, civilians, criminals with behaviors
+- **Props & Vehicles** - Place environment objects and vehicles with customization
+- **Objectives** - Define mission goals (locations, kills, collectibles, hacks)
+- **Minigames** - Lockpick, hacking, thermite, drilling, safecracking
+- **Security Systems** - Lasers, cameras, alarms, keypads (KuzQuality compatible)
+- **Rewards** - XP, money, items, reputation
+- **ox_target Integration** - Interactive points with custom labels
+- **Mission Lifecycle** - Assign, track, complete, abandon missions
 
 ### 🎨 User Interface
 - **Dark Theme** - Professional dark mode with orange accents
@@ -336,6 +347,63 @@ npm run start
 - [ ] Container/stash integration
 - [ ] Message system modal
 - [ ] Ban/suspension interface
+---
+
+## 🎯 Missions System Guide
+
+### Creating a Mission
+
+1. Navigate to **Intelligence** → **Missions** → **Crear**
+2. Follow the 7-step builder:
+   - **Step 1**: Basic info (name, type, difficulty)
+   - **Step 2**: Add NPCs (bosses, guards, civilians)
+   - **Step 3**: Place Props (objects, decorations)
+   - **Step 4**: Define Objectives (locations, kills, etc.)
+   - **Step 5**: Configure Minigames (lockpick, hack, etc.)
+   - **Step 6**: Add Security Systems (lasers, alarms)
+   - **Step 7**: Review and create
+
+### Mission Types
+- 💰 **Heist** - Robbery missions
+- 📦 **Delivery** - Transport missions
+- 🎯 **Assassination** - Target elimination
+- 🏦 **Robbery** - Heist operations
+- 👥 **Escort** - Protection missions
+- 🚨 **Rescue** - Rescue operations
+- 💣 **Sabotage** - Destruction missions
+
+### NPC Types & Behaviors
+```
+Types: Boss, Guard, Civilian, Criminal, Police
+Behaviors: Patrol (walk around), Static (stay in place), Aggressive (attack)
+```
+
+### Available Minigames
+- 🔓 **Lockpick** - Open locks
+- 💻 **Hacking** - Hack systems
+- 🔥 **Thermite** - Burn structures
+- 🪛 **Drilling** - Drill safes
+- 🔐 **Safecracking** - Open safes
+- ⏲️ **Timer Bomb** - Plant bombs
+
+### Security Systems
+- 🔴 **Lasers** - KuzQuality compatible laser grids
+- 📹 **Cameras** - Surveillance systems
+- 🚨 **Alarms** - Alert systems
+- 🔢 **Keypads** - Code-based locks
+
+For detailed information, see [MISSIONS_SYSTEM.md](./MISSIONS_SYSTEM.md)
+
+---
+
+## 📋 Roadmap
+
+- [x] Admin panel with player management
+- [x] Inventory system with item management
+- [x] Modals and draggable interface
+- [x] Jobs/Gangs creation and management
+- [x] Organization detail modal
+- [x] **Missions system with full builder**
 - [ ] Performance optimizations
 - [ ] Dark/Light theme toggle
 
