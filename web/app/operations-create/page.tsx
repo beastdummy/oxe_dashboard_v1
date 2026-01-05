@@ -19,43 +19,8 @@ export default function OperationsCreatePage() {
     color: "orange",
   })
 
-  const [isSelectingStash, setIsSelectingStash] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [successMessage, setSuccessMessage] = useState("")
-
-  const handleSelectStashWithOxLib = () => {
-    setIsSelectingStash(true)
-
-    // Invoke ox_lib to select coordinates on map
-    if (typeof window !== "undefined" && (window as any).invokeNative) {
-      ;(window as any).invokeNative("sendUIMessage", {
-        type: "selectStash",
-      })
-
-      // Listen for the response
-      const handleMessage = (event: any) => {
-        const data = event.data
-
-        if (data?.type === "stashSelected" && data?.coords) {
-          const { x, y, z } = data.coords
-          setFormData((prev) => ({
-            ...prev,
-            stash: `vec3(${x.toFixed(1)}, ${y.toFixed(1)}, ${z.toFixed(1)})`,
-          }))
-          setIsSelectingStash(false)
-          window.removeEventListener("message", handleMessage)
-        }
-      }
-
-      window.addEventListener("message", handleMessage)
-
-      // Timeout after 30 seconds
-      setTimeout(() => {
-        setIsSelectingStash(false)
-        window.removeEventListener("message", handleMessage)
-      }, 30000)
-    }
-  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -225,29 +190,18 @@ export default function OperationsCreatePage() {
               {/* Second Row - Stash Coordinates and Color */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
-                  <label className="text-sm font-semibold text-white mb-2 flex items-center gap-2">
-                    <span>Ubicación Stash Principal (Vec3)</span>
-                    <Badge className="bg-blue-500/30 text-blue-400 text-xs">ox_lib</Badge>
+                  <label className="text-sm font-semibold text-white mb-2">
+                    Ubicación Stash Principal (Vec3)
                   </label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="text"
-                      name="stash"
-                      value={formData.stash}
-                      onChange={handleInputChange}
-                      placeholder="vec3(0, 0, 0)"
-                      className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 font-mono flex-1"
-                    />
-                    <Button
-                      type="button"
-                      onClick={handleSelectStashWithOxLib}
-                      disabled={isSelectingStash}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 rounded transition-colors disabled:opacity-50"
-                    >
-                      {isSelectingStash ? "Seleccionando..." : "📍"}
-                    </Button>
-                  </div>
-                  <p className="text-xs text-neutral-500 mt-1">Haz click en el botón 📍 para seleccionar con ox_lib, o escribe: vec3(200, 300, 400)</p>
+                  <Input
+                    type="text"
+                    name="stash"
+                    value={formData.stash}
+                    onChange={handleInputChange}
+                    placeholder="vec3(0, 0, 0)"
+                    className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 font-mono"
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">Formato: vec3(200, 300, 400)</p>
                 </div>
 
                 <div>
