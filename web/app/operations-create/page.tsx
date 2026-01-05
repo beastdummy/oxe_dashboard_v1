@@ -13,9 +13,7 @@ export default function OperationsCreatePage() {
     name: "",
     label: "",
     description: "",
-    stashX: "0",
-    stashY: "0",
-    stashZ: "0",
+    stash: "vec3(0, 0, 0)",
     bankMoney: "10000",
     initialMoney: "5000",
     color: "orange",
@@ -27,6 +25,23 @@ export default function OperationsCreatePage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const parseVec3 = (vec3String: string) => {
+    const match = vec3String.match(/vec3\s*\(\s*([\d.-]+)\s*,\s*([\d.-]+)\s*,\s*([\d.-]+)\s*\)/i)
+    if (match) {
+      return {
+        x: parseFloat(match[1]),
+        y: parseFloat(match[2]),
+        z: parseFloat(match[3]),
+      }
+    }
+    return { x: 0, y: 0, z: 0 }
+  }
+
+  const getVec3Display = (vec3String: string) => {
+    const parsed = parseVec3(vec3String)
+    return `(${parsed.x}, ${parsed.y}, ${parsed.z})`
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -47,11 +62,7 @@ export default function OperationsCreatePage() {
         name: formData.name,
         label: formData.label,
         description: formData.description,
-        stash: {
-          x: parseFloat(formData.stashX),
-          y: parseFloat(formData.stashY),
-          z: parseFloat(formData.stashZ),
-        },
+        stash: parseVec3(formData.stash),
         status: "active",
         color: formData.color,
         ...(formData.type === "job"
@@ -86,9 +97,7 @@ export default function OperationsCreatePage() {
         name: "",
         label: "",
         description: "",
-        stashX: "0",
-        stashY: "0",
-        stashZ: "0",
+        stash: "vec3(0, 0, 0)",
         bankMoney: "10000",
         initialMoney: "5000",
         color: "orange",
@@ -182,44 +191,15 @@ export default function OperationsCreatePage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <label className="text-sm font-semibold text-white mb-2 block">Ubicación Stash Principal (Vec3)</label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div>
-                      <label className="text-xs text-neutral-400 block mb-1">X</label>
-                      <Input
-                        type="number"
-                        name="stashX"
-                        value={formData.stashX}
-                        onChange={handleInputChange}
-                        placeholder="0"
-                        step="0.1"
-                        className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-neutral-400 block mb-1">Y</label>
-                      <Input
-                        type="number"
-                        name="stashY"
-                        value={formData.stashY}
-                        onChange={handleInputChange}
-                        placeholder="0"
-                        step="0.1"
-                        className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-neutral-400 block mb-1">Z</label>
-                      <Input
-                        type="number"
-                        name="stashZ"
-                        value={formData.stashZ}
-                        onChange={handleInputChange}
-                        placeholder="0"
-                        step="0.1"
-                        className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500"
-                      />
-                    </div>
-                  </div>
+                  <Input
+                    type="text"
+                    name="stash"
+                    value={formData.stash}
+                    onChange={handleInputChange}
+                    placeholder="vec3(0, 0, 0)"
+                    className="bg-neutral-800 border-neutral-700 text-white placeholder-neutral-500 font-mono"
+                  />
+                  <p className="text-xs text-neutral-500 mt-1">Formato: vec3(x, y, z) ej: vec3(200, 300, 400)</p>
                 </div>
 
                 <div>
@@ -304,7 +284,7 @@ export default function OperationsCreatePage() {
                         </div>
                         <p className="text-neutral-400 text-xs">{formData.label || "(Label)"}</p>
                         <p className="text-neutral-400 text-xs">
-                          📍 Stash: ({formData.stashX}, {formData.stashY}, {formData.stashZ})
+                          📍 Stash: {getVec3Display(formData.stash)}
                         </p>
                       </div>
                     </CardContent>
@@ -342,9 +322,7 @@ export default function OperationsCreatePage() {
                       name: "",
                       label: "",
                       description: "",
-                      stashX: "0",
-                      stashY: "0",
-                      stashZ: "0",
+                      stash: "vec3(0, 0, 0)",
                       bankMoney: "10000",
                       initialMoney: "5000",
                       color: "orange",
