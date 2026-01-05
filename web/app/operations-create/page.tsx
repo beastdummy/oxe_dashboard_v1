@@ -215,6 +215,7 @@ export default function OperationsCreatePage() {
           setSelectedType(null)
         }}
         onSubmit={handleCreateJobGang}
+        forceType={selectedType || undefined}
       />
     </div>
   )

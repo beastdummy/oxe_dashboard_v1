@@ -13,6 +13,7 @@ interface CreateJobGangModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (data: any) => void
+  forceType?: "job" | "gang"
 }
 
 const COLOR_OPTIONS = [
@@ -26,8 +27,8 @@ const COLOR_OPTIONS = [
   { value: "cyan", label: "Cyan", bg: "bg-cyan-500" },
 ]
 
-export function CreateJobGangModal({ isOpen, onClose, onSubmit }: CreateJobGangModalProps) {
-  const [entityType, setEntityType] = useState<"job" | "gang">("job")
+export function CreateJobGangModal({ isOpen, onClose, onSubmit, forceType }: CreateJobGangModalProps) {
+  const [entityType, setEntityType] = useState<"job" | "gang">(forceType || "job")
   const [formData, setFormData] = useState({
     name: "",
     label: "",
@@ -103,31 +104,33 @@ export function CreateJobGangModal({ isOpen, onClose, onSubmit }: CreateJobGangM
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Entity Type Selection */}
-          <div className="flex gap-2 border-b border-neutral-700 pb-4">
-            <button
-              onClick={() => setEntityType("job")}
-              className={`flex items-center gap-2 px-4 py-2 rounded transition-colors ${
-                entityType === "job"
-                  ? "bg-orange-500 text-white"
-                  : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
-              }`}
-            >
-              <Briefcase className="w-4 h-4" />
-              Job
-            </button>
-            <button
-              onClick={() => setEntityType("gang")}
-              className={`flex items-center gap-2 px-4 py-2 rounded transition-colors ${
-                entityType === "gang"
-                  ? "bg-orange-500 text-white"
-                  : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              Gang
-            </button>
-          </div>
+          {/* Entity Type Selection - Only show if not forced */}
+          {!forceType && (
+            <div className="flex gap-2 border-b border-neutral-700 pb-4">
+              <button
+                onClick={() => setEntityType("job")}
+                className={`flex items-center gap-2 px-4 py-2 rounded transition-colors ${
+                  entityType === "job"
+                    ? "bg-orange-500 text-white"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                }`}
+              >
+                <Briefcase className="w-4 h-4" />
+                Job
+              </button>
+              <button
+                onClick={() => setEntityType("gang")}
+                className={`flex items-center gap-2 px-4 py-2 rounded transition-colors ${
+                  entityType === "gang"
+                    ? "bg-orange-500 text-white"
+                    : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                Gang
+              </button>
+            </div>
+          )}
 
           {/* Form Fields */}
           <div className="space-y-3">
