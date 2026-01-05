@@ -3,15 +3,33 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
-import { DollarSign, Briefcase, Users } from "lucide-react"
+import { DollarSign, Briefcase, Users, CheckCircle, XCircle } from "lucide-react"
 import { JobsGangsSection } from "@/components/JobsGangsSection"
 
 export default function OperationsPage() {
+  // Mock data - in a real app, this would come from props or API
+  const jobsStats = {
+    total: 23,
+    active: 8,
+    inactive: 15,
+  }
+
+  const gangsStats = {
+    total: 4,
+    active: 3,
+    defeated: 1,
+  }
+
   // Mock data for jobs
   const jobsData = [
-    { name: "Active", value: 8 },
-    { name: "Completed", value: 12 },
-    { name: "Failed", value: 3 },
+    { name: "Active", value: jobsStats.active },
+    { name: "Inactive", value: jobsStats.inactive },
+  ]
+
+  // Mock data for gangs
+  const gangsData = [
+    { name: "Active", value: gangsStats.active },
+    { name: "Defeated", value: gangsStats.defeated },
   ]
 
   // Mock data for gangs with earnings
@@ -23,7 +41,7 @@ export default function OperationsPage() {
   ]
 
   // Chart colors
-  const COLORS = ["#10b981", "#f59e0b", "#ef4444"]
+  const COLORS = ["#10b981", "#ef4444"]
   const gangColors = ["#8b5cf6", "#ec4899", "#f43f5e", "#06b6d4"]
 
   // Data for bar chart
@@ -51,6 +69,83 @@ export default function OperationsPage() {
       <div>
         <h1 className="text-2xl font-bold text-white tracking-wider">OPERATIONS CENTER</h1>
         <p className="text-sm text-neutral-400">Mission planning and job/gang creation</p>
+      </div>
+
+      {/* Status Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {/* Jobs Cards */}
+        <Card className="bg-neutral-900 border-neutral-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-neutral-400 tracking-wider">TOTAL JOBS</p>
+                <p className="text-2xl font-bold text-white font-mono">{jobsStats.total}</p>
+              </div>
+              <Briefcase className="w-6 h-6 text-orange-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-neutral-900 border-neutral-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-neutral-400 tracking-wider">JOBS ACTIVOS</p>
+                <p className="text-2xl font-bold text-green-500 font-mono">{jobsStats.active}</p>
+              </div>
+              <CheckCircle className="w-6 h-6 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-neutral-900 border-neutral-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-neutral-400 tracking-wider">JOBS INACTIVOS</p>
+                <p className="text-2xl font-bold text-red-500 font-mono">{jobsStats.inactive}</p>
+              </div>
+              <XCircle className="w-6 h-6 text-red-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Gangs Cards */}
+        <Card className="bg-neutral-900 border-neutral-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-neutral-400 tracking-wider">TOTAL GANGS</p>
+                <p className="text-2xl font-bold text-white font-mono">{gangsStats.total}</p>
+              </div>
+              <Users className="w-6 h-6 text-purple-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-neutral-900 border-neutral-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-neutral-400 tracking-wider">GANGS ACTIVAS</p>
+                <p className="text-2xl font-bold text-green-500 font-mono">{gangsStats.active}</p>
+              </div>
+              <CheckCircle className="w-6 h-6 text-green-500" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-neutral-900 border-neutral-700">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-neutral-400 tracking-wider">GANGS DERROTADAS</p>
+                <p className="text-2xl font-bold text-red-500 font-mono">{gangsStats.defeated}</p>
+              </div>
+              <XCircle className="w-6 h-6 text-red-500" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Charts Section */}
@@ -83,26 +178,54 @@ export default function OperationsPage() {
           </CardContent>
         </Card>
 
-        {/* Activity Chart */}
+        {/* Gangs Status Chart */}
         <Card className="bg-neutral-900 border-neutral-700">
           <CardHeader>
-            <CardTitle className="text-sm font-bold text-white tracking-wider">WEEKLY ACTIVITY</CardTitle>
+            <CardTitle className="text-sm font-bold text-white tracking-wider">GANGS STATUS</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={activityData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
-                <XAxis dataKey="name" stroke="#737373" />
-                <YAxis stroke="#737373" />
-                <Tooltip contentStyle={{ backgroundColor: "#1f2937", border: "1px solid #404040" }} />
-                <Legend />
-                <Bar dataKey="jobs" fill="#10b981" name="Jobs" />
-                <Bar dataKey="gangs" fill="#8b5cf6" name="Gangs" />
-              </BarChart>
+              <PieChart>
+                <Pie
+                  data={gangsData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, value }) => `${name}: ${value}`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {gangsData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => `${value} gangs`} />
+              </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
+
+      {/* Activity Chart */}
+      <Card className="bg-neutral-900 border-neutral-700">
+        <CardHeader>
+          <CardTitle className="text-sm font-bold text-white tracking-wider">WEEKLY ACTIVITY</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={activityData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#404040" />
+              <XAxis dataKey="name" stroke="#737373" />
+              <YAxis stroke="#737373" />
+              <Tooltip contentStyle={{ backgroundColor: "#1f2937", border: "1px solid #404040" }} />
+              <Legend />
+              <Bar dataKey="jobs" fill="#10b981" name="Jobs" />
+              <Bar dataKey="gangs" fill="#8b5cf6" name="Gangs" />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
       {/* Gangs Scoreboard */}
       <Card className="bg-neutral-900 border-neutral-700">
