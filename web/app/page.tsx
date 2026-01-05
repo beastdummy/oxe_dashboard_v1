@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import CommandCenterPage from "./command-center/page"
 import AgentNetworkPage from "./agent-network/page"
 import OperationsPage from "./operations/page"
+import OperationsJobsPage from "./operations-jobs/page"
+import OperationsGangsPage from "./operations-gangs/page"
 import IntelligencePage from "./intelligence/page"
 import SystemsPage from "./systems/page"
 import ActivityPage from "./activity/page"
@@ -16,6 +18,7 @@ import { useModals } from "@/context/ModalsContext"
 export default function TacticalDashboard() {
   const [activeSection, setActiveSection] = useState("overview")
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(null)
   const t = useTranslation()
   const { language, setLanguage } = useLanguage()
   const { minimizeDashboard, closeDashboard } = useModals()
@@ -48,23 +51,84 @@ export default function TacticalDashboard() {
             {[
               { id: "overview", icon: Monitor, label: t.sidebar.centerCommand },
               { id: "agents", icon: Users, label: t.sidebar.players },
-              { id: "operations", icon: Target, label: t.sidebar.operations },
+              { id: "operations", icon: Target, label: t.sidebar.operations, submenu: true },
               { id: "intelligence", icon: Shield, label: t.sidebar.intelligence },
               { id: "systems", icon: Settings, label: t.sidebar.systems },
               { id: "activity", icon: Bell, label: "Actividad" },
             ].map((item) => (
-              <button
-                key={item.id}
-                onClick={() => setActiveSection(item.id)}
-                className={`w-full flex items-center gap-3 p-3 rounded transition-colors ${
-                  activeSection === item.id
-                    ? "bg-orange-500 text-white"
-                    : "text-neutral-400 hover:text-white hover:bg-neutral-800"
-                }`}
-              >
-                <item.icon className="w-5 h-5 md:w-5 md:h-5 sm:w-6 sm:h-6" />
-                {!sidebarCollapsed && <span className="text-sm font-medium">{item.label}</span>}
-              </button>
+              <div key={item.id}>
+                <button
+                  onClick={() => {
+                    if (item.submenu) {
+                      setExpandedMenu(expandedMenu === item.id ? null : item.id)
+                    } else {
+                      setActiveSection(item.id)
+                      setExpandedMenu(null)
+                    }
+                  }}
+                  className={`w-full flex items-center gap-3 p-3 rounded transition-colors ${
+                    activeSection === item.id
+                      ? "bg-orange-500 text-white"
+                      : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                  }`}
+                >
+                  <item.icon className="w-5 h-5 md:w-5 md:h-5 sm:w-6 sm:h-6" />
+                  {!sidebarCollapsed && (
+                    <>
+                      <span className="text-sm font-medium">{item.label}</span>
+                      {item.submenu && (
+                        <ChevronRight
+                          className={`w-4 h-4 ml-auto transition-transform ${
+                            expandedMenu === item.id ? "rotate-90" : ""
+                          }`}
+                        />
+                      )}
+                    </>
+                  )}
+                </button>
+
+                {/* Submenu */}
+                {item.submenu && expandedMenu === item.id && !sidebarCollapsed && (
+                  <div className="ml-4 mt-2 space-y-1 border-l border-neutral-700 pl-2">
+                    <button
+                      onClick={() => {
+                        setActiveSection("operations-jobs")
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        activeSection === "operations-jobs"
+                          ? "bg-orange-500/20 text-orange-500"
+                          : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                      }`}
+                    >
+                      Ver Trabajos
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveSection("operations-gangs")
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        activeSection === "operations-gangs"
+                          ? "bg-orange-500/20 text-orange-500"
+                          : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                      }`}
+                    >
+                      Ver Bandas
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveSection("operations-create")
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+                        activeSection === "operations-create"
+                          ? "bg-orange-500/20 text-orange-500"
+                          : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                      }`}
+                    >
+                      Crear Nuevo
+                    </button>
+                  </div>
+                )}
+              </div>
             ))}
           </nav>
 
@@ -143,6 +207,8 @@ export default function TacticalDashboard() {
           {activeSection === "overview" && <CommandCenterPage />}
           {activeSection === "agents" && <AgentNetworkPage />}
           {activeSection === "operations" && <OperationsPage />}
+          {activeSection === "operations-jobs" && <OperationsJobsPage />}
+          {activeSection === "operations-gangs" && <OperationsGangsPage />}
           {activeSection === "intelligence" && <IntelligencePage />}
           {activeSection === "systems" && <SystemsPage />}
           {activeSection === "activity" && <ActivityPage />}

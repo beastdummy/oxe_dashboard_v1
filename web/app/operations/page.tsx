@@ -361,15 +361,6 @@ export default function OperationsPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* JOBS & GANGS SECTION */}
-      <div className="mt-8">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-white tracking-wider">CREATE & MANAGE</h2>
-          <p className="text-xs text-neutral-500">Create new jobs and gangs</p>
-        </div>
-        <JobsGangsSection />
-      </div>
     </div>
   )
 }
