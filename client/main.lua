@@ -1,6 +1,7 @@
 -- oxe_dashboard_v1 | Client
 -- NUI Bridge mejorado: comunicación bidireccional Lua ↔ React
 
+local Framework = require '@ox_core/lib/init' or {}
 local dashboard_open = false
 local player_data = {}
 local nui_callbacks = {}
@@ -32,12 +33,14 @@ local function open_dashboard()
   SetNuiFocus(true, true)
   
   -- Obtener datos del jugador
-  local player = exports.ox_core:GetPlayer(PlayerPedId())
+  local player = Framework.GetPlayer(PlayerPedId())
   if player then
     player_data = {
       id = GetPlayerServerId(PlayerId()),
       name = GetPlayerName(PlayerId()),
       license = player:get('license'),
+      job = player:get('job'),
+      gang = player:get('gang'),
     }
   end
   
@@ -85,6 +88,14 @@ RegisterNUICallback('dashboard_action', function(data, cb)
         dashboard_open = dashboard_open,
       },
     }))
+  elseif action == 'CREATE_JOB' then
+    -- Envía el evento de creación de job al servidor
+    TriggerServerEvent('job:create', payload)
+    cb(json.encode({ status = 'ok' }))
+  elseif action == 'CREATE_GANG' then
+    -- Envía el evento de creación de gang al servidor
+    TriggerServerEvent('gang:create', payload)
+    cb(json.encode({ status = 'ok' }))
   else
     cb(json.encode({ status = 'error', message = 'Unknown action: ' .. action }))
   end

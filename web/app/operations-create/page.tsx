@@ -53,61 +53,84 @@ export default function OperationsCreatePage() {
       return
     }
 
+    // Validar formato de vec3
+    const parsedStash = parseVec3(formData.stash)
+    if (parsedStash.x === 0 && parsedStash.y === 0 && parsedStash.z === 0 && formData.stash !== "vec3(0, 0, 0)") {
+      alert("Formato de ubicación inválido. Usa: vec3(x, y, z)")
+      return
+    }
+
     setIsLoading(true)
 
-    // Simular delay de creación
-    setTimeout(() => {
-      const createData = {
-        type: formData.type,
-        name: formData.name,
-        label: formData.label,
-        description: formData.description,
-        stash: parseVec3(formData.stash),
-        status: "active",
-        color: formData.color,
-        ...(formData.type === "job"
-          ? {
-              treasury: parseInt(formData.bankMoney),
-              level: 1,
-              members: 0,
-            }
-          : {
-              leader: "N/A",
-              reputation: parseInt(formData.initialMoney),
-              members: 0,
-            }),
+    const createData = {
+      type: formData.type,
+      name: formData.name,
+      label: formData.label,
+      description: formData.description,
+      stash: parsedStash,
+      status: "active",
+      color: formData.color,
+      ...(formData.type === "job"
+        ? {
+            treasury: parseInt(formData.bankMoney) || 10000,
+            level: 1,
+            members: 0,
+          }
+        : {
+            leader: "N/A",
+            reputation: parseInt(formData.initialMoney) || 5000,
+            members: 0,
+          }),
+    }
+
+    // Enviar al servidor vía NUI callback
+    const eventName = formData.type === "job" ? "job:create" : "gang:create"
+    
+    if (typeof window !== "undefined" && (window as any).invokeNative) {
+      try {
+        ;(window as any).invokeNative("triggerServerEvent", [eventName, JSON.stringify(createData)])
+        
+        console.log(`✅ Evento ${eventName} enviado:`, createData)
+
+        // Mostrar mensaje de éxito
+        setSuccessMessage(
+          `¡${formData.type === "job" ? "Trabajo" : "Banda"} "${formData.name}" enviado al servidor!`
+        )
+
+        // Reset del formulario
+        setFormData({
+          type: "job",
+          name: "",
+          label: "",
+          description: "",
+          stash: "vec3(0, 0, 0)",
+          bankMoney: "10000",
+          initialMoney: "5000",
+          color: "orange",
+        })
+
+        setIsLoading(false)
+
+        // Limpiar mensaje después de 3 segundos
+        setTimeout(() => setSuccessMessage(""), 3000)
+      } catch (error) {
+        console.error("Error enviando evento:", error)
+        alert("Error al enviar la solicitud al servidor")
+        setIsLoading(false)
       }
-
-      // Enviar al servidor
-      if (typeof window !== "undefined" && (window as any).invokeNative) {
-        ;(window as any).invokeNative("triggerServerEvent", [
-          formData.type === "job" ? "job:create" : "gang:create",
-          JSON.stringify(createData),
-        ])
-      }
-
-      console.log("Creando:", createData)
-
-      // Mostrar mensaje de éxito
-      setSuccessMessage(`¡${formData.type === "job" ? "Trabajo" : "Banda"} "${formData.name}" creado exitosamente!`)
+    } else {
+      console.warn("⚠️ invokeNative no disponible, modo desarrollo")
+      console.log("Datos que se enviarían:", createData)
       
-      // Reset del formulario
-      setFormData({
-        type: "job",
-        name: "",
-        label: "",
-        description: "",
-        stash: "vec3(0, 0, 0)",
-        bankMoney: "10000",
-        initialMoney: "5000",
-        color: "orange",
-      })
-
-      setIsLoading(false)
-
-      // Limpiar mensaje después de 3 segundos
-      setTimeout(() => setSuccessMessage(""), 3000)
-    }, 1000)
+      // Simular envío en desarrollo
+      setTimeout(() => {
+        setSuccessMessage(
+          `¡${formData.type === "job" ? "Trabajo" : "Banda"} "${formData.name}" creado (modo desarrollo)!`
+        )
+        setIsLoading(false)
+        setTimeout(() => setSuccessMessage(""), 3000)
+      }, 500)
+    }
   }
 
   return (
