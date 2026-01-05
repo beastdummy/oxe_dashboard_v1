@@ -62,17 +62,8 @@ export default function OperationsPage() {
     { name: "Defeated", value: gangsStats.defeated },
   ]
 
-  // Mock data for gangs with earnings
-  const gangsScoreboard = [
-    { id: 1, name: "Shadow Cartel", members: 15, money: 125000, territory: "North District", reputation: 85 },
-    { id: 2, name: "Iron Brotherhood", members: 22, money: 189500, territory: "Downtown", reputation: 92 },
-    { id: 3, name: "Crimson Syndicate", members: 18, money: 145600, territory: "East Side", reputation: 78 },
-    { id: 4, name: "Black Market Crew", members: 11, money: 98700, territory: "Port Area", reputation: 65 },
-  ]
-
   // Chart colors
   const COLORS = ["#10b981", "#ef4444"]
-  const gangColors = ["#8b5cf6", "#ec4899", "#f43f5e", "#06b6d4"]
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("en-US", {
@@ -367,67 +358,6 @@ export default function OperationsPage() {
                 %
               </p>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Gangs Scoreboard */}
-      <Card className="bg-neutral-900 border-neutral-700">
-        <CardHeader>
-          <CardTitle className="text-sm font-bold text-white tracking-wider flex items-center gap-2">
-            <DollarSign className="w-4 h-4" />
-            GANGS EARNINGS SCOREBOARD
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-neutral-700">
-                  <th className="text-left py-3 px-4 text-neutral-400 tracking-wider">GANG NAME</th>
-                  <th className="text-left py-3 px-4 text-neutral-400 tracking-wider">MEMBERS</th>
-                  <th className="text-left py-3 px-4 text-neutral-400 tracking-wider">TERRITORY</th>
-                  <th className="text-left py-3 px-4 text-neutral-400 tracking-wider">REPUTATION</th>
-                  <th className="text-right py-3 px-4 text-neutral-400 tracking-wider">TOTAL EARNINGS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {gangsScoreboard.map((gang, index) => (
-                  <tr key={gang.id} className="border-b border-neutral-800 hover:bg-neutral-800/50 transition-colors">
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: gangColors[index % gangColors.length] }}
-                        ></div>
-                        <span className="text-white font-medium">{gang.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-neutral-300">
-                      <div className="flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        {gang.members}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-neutral-300">{gang.territory}</td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 bg-neutral-800 rounded-full h-2 max-w-[100px]">
-                          <div
-                            className="bg-yellow-500 h-2 rounded-full"
-                            style={{ width: `${gang.reputation}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-yellow-500 font-mono text-xs">{gang.reputation}%</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-right">
-                      <span className="text-green-400 font-mono font-semibold">{formatCurrency(gang.money)}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </CardContent>
       </Card>
